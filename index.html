@@ -1,0 +1,5340 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSN - Hyper Speed News</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #1a73e8;
+    --secondary-color: #34a853;
+    --danger-color: #ea4335;
+    --warning-color: #fbbc04;
+    --dark-color: #202124;
+    --light-gray: #f8f9fa;
+    --border-color: #dadce0;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --shadow: 0 1px 6px rgba(32,33,36,.28);
+    --hover-shadow: 0 2px 8px rgba(32,33,36,.28);
+    --sidebar-width: 300px;
+}
+
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--light-gray);
+    transition: background 0.3s ease, color 0.3s ease;
+    padding-bottom: 70px; /* Space for floating button */
+}
+
+/* Header */
+.header {
+    background: white;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.header.hidden {
+    transform: translateY(-100%);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 2rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-container i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-secondary);
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    font-size: 0.75rem;
+    outline: none;
+    transition: all 0.3s ease;
+    cursor: none;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.btn-login, .btn-signup {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: none;
+    transition: all 0.3s ease;
+}
+
+.btn-login {
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-signup {
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: white;
+}
+
+.btn-login:hover, .btn-signup:hover {
+    opacity: 0.9;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: none;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    background: var(--light-gray);
+}
+
+/* Navigation */
+.nav-bar {
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    position: sticky;
+    top: 60px; /* Height of header */
+    z-index: 90;
+    transition: transform 0.3s ease;
+}
+
+.nav-bar.hidden {
+    transform: translateY(-100%);
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+    padding: 0 1rem;
+}
+
+.nav-item {
+    padding: 1rem 0;
+    white-space: nowrap;
+    cursor: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Disabled state */
+input:disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+/* Stories Container - Affichage conditionnel */
+.stories-section {
+    display: none; /* Masqué par défaut */
+    padding: 1.5rem;
+    margin: 1rem auto;
+    max-width: 1200px;
+}
+
+.stories-section.active {
+    display: block; /* Affiché seulement sur À la une */
+}
+
+.stories-container {
+    display: flex;
+    gap: 12px;
+    padding: 16px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.stories-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Story Item */
+.story-item {
+    flex: 0 0 auto;
+    width: 280px;
+    height: 160px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.story-item:hover {
+    transform: scale(1.02);
+}
+
+.story-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+}
+
+.story-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+}
+
+.story-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    color: white;
+    z-index: 2;
+}
+
+.story-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.story-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.story-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.story-time::before {
+    content: "•";
+    margin-right: 4px;
+}
+
+.story-source {
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+}
+
+.story-breaking {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(45deg, #ff4444, #ff6b6b);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 3;
+}
+
+.story-stats {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+}
+
+.story-stat {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Style pour le story le plus pertinent */
+.story-item.featured {
+    border: 3px solid #ffd700;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.story-item.featured .story-breaking {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stories-section {
+        padding: 1rem;
+    }
+    
+    .stories-container {
+        gap: 10px;
+        padding: 12px 10px;
+    }
+    
+    .story-item {
+        width: 240px;
+        height: 140px;
+    }
+    
+    .story-title {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stories-section {
+        padding: 0.1rem;
+    }
+    
+    .stories-container {
+        gap: 8px;
+        padding: 8px 8px;
+    }
+    
+    .story-item {
+        width: 300px;
+        height: 200px;
+    }
+    
+    .story-title {
+        font-size: 13px;
+    }
+}
+
+/* Floating Post Button */
+.floating-post-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: none;
+    box-shadow: var(--hover-shadow);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.floating-post-btn:hover {
+    transform: scale(1.05);
+}
+
+/* News Feed */
+.news-feed {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.post {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.post-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.post-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: none;
+}
+
+.post-user-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    cursor: none;
+}
+
+.post-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.post-actions-menu {
+    position: relative;
+}
+
+.post-menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: none;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.post-menu-btn:hover {
+    background: var(--light-gray);
+}
+
+.post-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 10;
+    display: none;
+}
+
+.post-menu-dropdown.show {
+    display: block;
+}
+
+.post-menu-item {
+    padding: 0.75rem 1rem;
+    cursor: none;
+    white-space: nowrap;
+    transition: background 0.3s ease;
+}
+
+.post-menu-item:hover {
+    background: var(--light-gray);
+}
+
+.post-content {
+    margin-bottom: 1rem;
+}
+
+.post-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.post-text {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.post-text.collapsed {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.post-text.collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(transparent, white);
+}
+
+.see-more-btn {
+    color: var(--primary-color);
+    background: none;
+    border: none;
+    cursor: none;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+.post-images {
+    margin-bottom: 1rem;
+}
+
+.post-images-grid {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.post-images-grid.single img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: none;
+}
+
+.post-images-grid.double {
+    grid-template-columns: 1fr 1fr;
+}
+
+.post-images-grid.double img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: none;
+}
+
+.post-images-grid.triple {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.post-images-grid.triple img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: none;
+}
+
+.post-images-grid.quadruple {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.post-images-grid.quadruple img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: none;
+}
+
+.post-images-grid.multiple {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 200px 200px;
+}
+
+.post-images-grid.multiple img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: none;
+}
+
+.post-images-grid.multiple img:first-child {
+    grid-column: 1 / 3;
+}
+
+.more-images-overlay {
+    position: relative;
+}
+
+.more-images-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.post-tag {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    cursor: none;
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.post-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    cursor: none;
+    transition: all 0.3s ease;
+    position: relative;
+    user-select: none;
+}
+
+.post-action:hover {
+    color: var(--primary-color);
+}
+
+.post-action.active {
+    color: var(--primary-color);
+}
+
+.reaction-options {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: white;
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
+    display: none;
+    z-index: 10;
+}
+
+.reaction-options.show {
+    display: flex;
+}
+
+.reaction-option {
+    font-size: 1.2rem;
+    cursor: none;
+    transition: transform 0.2s ease;
+}
+
+.reaction-option:hover {
+    transform: scale(1.2);
+}
+
+.comments-preview {
+    margin-top: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.comments-preview.show {
+    max-height: 200px;
+}
+
+.comment-preview {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.comment-preview-user {
+    font-weight: 500;
+}
+
+.comment-preview-text {
+    flex: 1;
+}
+
+.add-comment-preview {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.add-comment-preview input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    outline: none;
+}
+
+.add-comment-preview button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: none;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;    
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 600px;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.modal-back {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: none;
+    color: var(--text-secondary);
+    margin-right: 1rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: none;
+    color: var(--text-secondary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}    
+
+/* Hamburger Menu */
+.hamburger-modal .modal-content {
+    height: 100%;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.menu-section {
+    margin-bottom: 2rem;
+}
+
+.menu-section h4 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: none;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-item:hover {
+    background: var(--light-gray);
+}
+
+.menu-item i {
+    width: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* Fullscreen Search Modal */
+.search-modal .modal-content {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
+
+.search-modal .modal-header {
+    padding: 1.5rem;
+}
+
+.search-input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.search-input-container i {
+    color: var(--text-secondary);
+}
+
+#fullscreenSearch {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+}
+
+.search-history {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.history-items {
+    margin: 1rem 0;
+}
+
+.history-item {
+    padding: 0.75rem;
+    cursor: none;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item:hover {
+    background: var(--light-gray);
+}
+
+.clear-history {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: none;
+    font-size: 0.9rem;
+}
+
+.search-filters {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.filter-option {
+    padding: 0.5rem 1rem;
+    background: var(--light-gray);
+    border-radius: 20px;
+    cursor: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filter-option.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.search-results {
+    padding: 1rem 0;
+}
+
+.search-initial-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    color: var(--text-secondary);
+}
+
+.search-initial-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.search-result-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: none;
+    transition: background 0.3s ease;
+}
+
+.search-result-item:hover {
+    background: var(--light-gray);
+}
+
+.user-result {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-result img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.search-result-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Post Modal */
+.post-modal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.categories-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-option {
+    padding: 0.5rem 1rem;
+    background: var(--light-gray);
+    border-radius: 20px;
+    cursor: none;
+    transition: all 0.3s ease;
+}
+
+.category-option.selected {
+    background: var(--primary-color);
+    color: white;
+}
+
+.selected-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.selected-category {
+    padding: 0.25rem 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.remove-category {
+    cursor: none;
+    font-size: 0.8rem;
+}
+
+.title-counter {
+    position: relative;
+}
+
+.char-counter {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.post-modal .form-group input,
+.post-modal .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.post-modal .form-group textarea {
+    min-height: 100px;
+    max-height: 300px;
+    resize: vertical;
+}
+
+.post-modal .btn-upload {
+    background: var(--light-gray);
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+    padding: 1rem;
+    width: 100%;
+    border-radius: 8px;
+    cursor: none;
+    transition: all 0.3s ease;
+}
+
+.post-modal .btn-upload:hover {
+    background: #e8f0fe;
+    border-color: var(--primary-color);
+}
+
+.images-preview {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.image-preview-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    width: 100px;
+    height: 100px;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-modal .btn-submit {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: none;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.post-modal .btn-submit:hover {
+    background: #0d5bba;
+}
+
+/* Auth Modal */
+.auth-form {
+    padding: 1rem 0;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: none;
+    color: var(--text-secondary);
+}
+
+.btn-auth {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-auth:hover {
+    background: #0d5bba;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.age-display {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* Profile Modal */
+.profile-modal .modal-content {
+    max-width: 800px;
+}
+
+.profile-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+}
+
+.profile-image-container {
+    position: relative;
+}
+
+.profile-image-container img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.edit-profile-pic {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.profile-bio {
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+.btn-edit-profile {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: none;
+    font-size: 0.9rem;
+}
+
+.profile-posts {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Edit Profile Modal */
+.edit-profile-modal .modal-content {
+    max-width: 600px;
+}
+
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.image-upload-container img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.btn-upload-image {
+    background: var(--light-gray);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: none;
+    font-size: 0.9rem;
+}
+
+/* Image Viewer Modal */
+.image-viewer-modal .modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.image-viewer-modal .modal-header {
+    background: transparent;
+    border: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.image-viewer-modal .modal-close {
+    color: white;
+}
+
+.image-viewer-modal .modal-body {
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+#viewedImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    z-index: 10;
+}
+
+.prev-btn {
+    left: 1rem;
+}
+
+.next-btn {
+    right: 1rem;
+}
+
+/* Comments Modal */
+.comments-modal .modal-content {
+    max-width: 100%;
+    height: 100%;
+}
+
+.post-in-modal {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;    
+}
+
+.comments-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.comments-sort select {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.25rem;
+    outline: none;
+}
+
+.comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.comment {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.comment-header img {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-user {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.comment-text {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.comment-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.comment-action {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    cursor: none;
+}
+
+.add-comment {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.add-comment input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    outline: none;
+}
+
+.add-comment button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hashtag Modal */
+.hashtag-modal .modal-content {
+    max-width: 800px;
+    height: 80%;
+}
+
+.hashtag-info {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.hashtag-posts {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Notifications Modal */
+.notifications-modal .modal-content {
+    width: 100%;
+    height: 100%;
+}
+
+.notifications-list {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.notification {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    gap: 1rem;
+    cursor: none;
+    transition: background 0.3s ease;
+}
+
+.notification:hover {
+    background: var(--light-gray);
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-text {
+    margin-bottom: 0.25rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Saved Posts Modal */
+.saved-posts-modal .modal-content {
+    width: 100%;
+    height: 100%;
+}
+
+.saved-posts-list {
+    display: grid;
+    gap: 1rem;
+}
+
+/* About Modal */
+.about-modal .modal-content {
+    max-width: 600px;
+    height: auto;
+}
+
+.about-content {
+    text-align: center;
+}
+
+.about-content h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.about-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--light-gray);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Dark Theme */
+body.dark-theme {
+    background: var(--dark-color);
+    color: white;
+}
+
+body.dark-theme .header,
+body.dark-theme .nav-bar,
+body.dark-theme .post,
+body.dark-theme .search-input,
+body.dark-theme .search-suggestions,
+body.dark-theme .modal-content,
+body.dark-theme .modal-header,
+body.dark-theme .post-menu-dropdown,
+body.dark-theme .menu-item:hover,
+body.dark-theme .search-result-item:hover,
+body.dark-theme .notification:hover {
+    background: #303134;
+    color: white;
+    border-color: #5f6368;
+}
+
+body.dark-theme .search-input,
+body.dark-theme .form-group input,
+body.dark-theme .form-group textarea,
+body.dark-theme .add-comment-preview input,
+body.dark-theme .add-comment input,
+body.dark-theme .comments-sort select {
+    background: #202124;
+    color: white;
+    border-color: #5f6368;
+}
+
+body.dark-theme .text-secondary,
+body.dark-theme .post-time,
+body.dark-theme .menu-section h4,
+body.dark-theme .notification-time {
+    color: #bdc1c6;
+}
+
+body.dark-theme .btn-upload {
+    background: #3c4043;
+    border-color: #5f6368;
+    color: #bdc1c6;
+}
+
+body.dark-theme .category-option {
+    background: #3c4043;
+    color: #bdc1c6;
+}
+
+body.dark-theme .post-text.collapsed::after {
+    background: linear-gradient(transparent, #303134);
+}
+
+body.dark-theme .see-more-btn {
+    color: #8ab4f8;
+}
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes highlight {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(26, 115, 232, 0.1); }
+    100% { background-color: transparent; }
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .nav-bar {
+        top: 56px;
+    }
+    
+    .nav-content {
+        gap: 1rem;
+        padding: 0 0.7rem;
+    }
+    
+    .nav-item {
+        padding: 0.8rem 0;
+        font-size: 0.85rem;
+    }
+}
+/* Media Query spécifique pour Moto G54 5G et mobiles similaires */
+@media (max-width: 480px) and (min-width: 360px) and (max-height: 2400px) and (min-height: 2000px),
+       (max-width: 480px) and (orientation: portrait),
+       (max-device-width: 480px) and (device-aspect-ratio: 9/20) {
+    
+    /* HEADER - Optimisation pour une seule ligne */
+    .header-content {
+        padding: 0.5rem 1rem;
+        height: 60px;
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+   
+.nav-item {
+    padding: 1rem 0;
+    white-space: nowrap;
+    cursor: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    font-size:1rem;
+}
+    .search-container {
+        flex: 1;
+        margin: 0 0.5rem;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .search-input {
+        padding: 0.6rem 0.6rem 0.6rem 2.5rem;
+        font-size: 1rem;
+    }
+
+    .search-container i {
+        left: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .user-actions {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: auto;
+    }
+
+    .auth-buttons {
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    .btn-login, .btn-signup {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .profile-pic {
+        width: 45px;
+        height: 45px;
+    }
+
+    .hamburger-btn {
+        padding: 0.4rem;
+        font-size: 1.2rem;
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Ajustements spécifiques pour l'état connecté */
+    .user-profile {
+        margin-left: 0;
+    }
+
+    /* État lorsque l'utilisateur est connecté */
+    .user-connected {
+        flex: 0 0 auto;
+    }
+
+    .user-connected .search-container {
+        flex: 1;
+        margin: 0 0.8rem;
+    }
+
+    .user-connected .user-actions {
+        flex: 0 0 auto;
+    }
+}
+
+/* Version encore plus compacte pour les très petits écrans */
+@media (max-width: 380px) {
+    .header-content {
+        padding: 0.4rem 0.8rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+    }
+
+    .search-input {
+        padding: 0.5rem 0.5rem 0.5rem 2.3rem;
+        font-size: 0.85rem;
+    }
+
+    .search-container i {
+        left: 0.7rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-login, .btn-signup {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .profile-pic, .hamburger-btn {
+        width: 55px;
+        height: 55px;
+    }
+}
+
+/* Pour l'orientation paysage sur mobile */
+@media (max-height: 480px) and (orientation: landscape) {
+   height: height: ;;
+
+}
+
+/* Style de base pour tous les champs de saisie */
+input[type="textarea"],
+input[type="email"],
+input[type="password"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* Style au survol */
+input[type="textarea"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+input[type="date"]:hover {
+    border-color: #c8d0d9;
+}
+
+/* Style lorsqu'un champ est focus (clic dessus) */
+input[type="textarea"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Style quand le champ a du texte (reste bleu après saisie) */
+input[type="textarea"]:not(:placeholder-shown),
+input[type="email"]:not(:placeholder-shown),
+input[type="password"]:not(:placeholder-shown),
+input[type="date"]:not(:placeholder-shown) {
+    border-color: #007bff;
+}
+
+/* Style spécifique pour garder la bordure bleue après vérification du mot de passe */
+input[type="password"]:valid {
+    border-color: #007bff;
+}
+
+/* Style pour le placeholder */
+input[type="textarea"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="date"]::placeholder {
+    color: #a0a0a0;
+    opacity: 1;
+}
+
+/* Style spécifique pour le champ date */
+input[type="date"] {
+    cursor: pointer;
+}
+
+/* Style pour les labels (optionnel mais recommandé) */
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 14px;
+}
+
+/* Style pour le conteneur des champs (optionnel) */
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* Style quand le champ est valide (reste bleu après vérification) */
+input[type="textarea"]:valid,
+input[type="email"]:valid,
+input[type="password"]:valid,
+input[type="date"]:valid {
+    border-color: #007bff;
+}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="user-profile" id="userProfile" style="display: none;">
+                    <img src="hsn.png" alt="Profil" class="profile-pic" id="profilePic">
+                </div>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-input" placeholder="Recherche">
+            </div>
+            
+            <div class="user-actions">
+                <div class="auth-buttons" id="authButtons">
+                    <button class="btn-login" id="loginBtn">Connexion</button>
+                </div>
+                <button class="hamburger-btn" id="hamburgerBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <div class="nav-item active" data-category="all">À la une</div>
+            <div class="nav-item" data-category="technology">Technologie</div>
+            <div class="nav-item" data-category="science">Science</div>
+            <div class="nav-item" data-category="politics">Politique</div>
+            <div class="nav-item" data-category="sports">Sports</div>
+            <div class="nav-item" data-category="business">Business</div>
+            <div class="nav-item" data-category="entertainment">Divertissement</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Breaking News Stories - Only on "À la une" -->
+        <!-- Stories Section - Seulement sur À la une -->
+<div class="stories-section" id="storiesSection">
+    <div class="stories-container" id="storiesContainer">
+        <!-- Les stories seront générées dynamiquement -->
+    </div>
+</div>
+
+        <!-- News Feed -->
+        <div class="news-feed" id="newsFeed">
+            <!-- Posts will be loaded here -->
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Post Button -->
+    <button class="floating-post-btn" id="floatingPostBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="authModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3 id="authModalTitle">Connexion</h3>
+                <button class="modal-close" id="authModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="Email" >
+                    </div>
+                    <div class="form-group password-container">
+                        <input type="password" id="loginPassword" placeholder="Mot de passe" >
+                        <i class="fas fa-eye password-toggle" id="loginPasswordToggle"></i>
+                    </div>
+                    <button class="btn-auth" id="loginSubmit">Se connecter</button>
+                    <div class="auth-switch">
+                        Pas de compte? <a href="#" id="switchToSignup">S'inscrire</a>
+                    </div>
+                </div>
+
+                <div class="auth-form" id="signupForm" style="display: none;">
+                    <div class="form-group">
+                        <input type="textarea" id="signupName" placeholder="Nom complet">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="signupEmail" placeholder="Email">
+                    </div>
+                    <div class="form-group password-container">
+                        <input type="password" id="signupPassword" placeholder="Mot de passe">
+                        <i class="fas fa-eye password-toggle" id="signupPasswordToggle"></i>
+                    </div>
+                    <div class="form-group password-container">
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirmer le mot de passe">
+                        <i class="fas fa-eye password-toggle" id="signupConfirmPasswordToggle"></i>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de naissance</label>
+                        <input type="date" id="signupBirthdate">
+                        <span class="age-display" id="ageDisplay"></span>
+                    </div>
+                    <div class="form-group checkbox-container">
+                        <input type="checkbox" id="acceptTerms">
+                        <label for="acceptTerms">J'accepte les conditions d'utilisation</label>
+                    </div>
+                    <button class="btn-auth" id="signupSubmit">S'inscrire</button>
+                    <div class="auth-switch">
+                        Déjà un compte? <a href="#" id="switchToLogin">Se connecter</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hamburger Menu (Settings) -->
+    <div class="modal hamburger-modal" id="hamburgerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="hamburgerModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Menu</h3>
+                <button class="modal-close" id="closeHamburgerModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="menu-section">
+                    <h4>Compte</h4>
+                    <div class="menu-item" id="menuProfile">
+                        <i class="fas fa-user"></i>
+                        <span>Profil</span>
+                    </div>
+                    <div class="menu-item" id="menuSavedPosts">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Publications enregistrées</span>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>Paramètres</h4>
+                    <div class="menu-item" id="menuNotifications">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </div>
+                    <div class="menu-item" id="menuSettings">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h4>À propos</h4>
+                    <div class="menu-item" id="menuAbout">
+                        <i class="fas fa-info-circle"></i>
+                        <span>À propos de HSN</span>
+                    </div>
+                </div>
+                
+                <div class="menu-section" id="menuLogoutSection" style="display: none;">
+                    <div class="menu-item" id="menuLogout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Modal -->
+    <div class="modal post-modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="postModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Créer une publication</h3>
+                <button class="modal-close" id="closePostModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Catégories (max 3)</label>
+                    <div class="categories-selector">
+                        <div class="category-option" data-category="technology">Technologie</div>
+                        <div class="category-option" data-category="science">Science</div>
+                        <div class="category-option" data-category="politics">Politique</div>
+                        <div class="category-option" data-category="sports">Sports</div>
+                        <div class="category-option" data-category="business">Business</div>
+                        <div class="category-option" data-category="entertainment">Divertissement</div>
+                    </div>
+                    <div class="selected-categories" id="selectedCategories"></div>
+                </div>
+                <div class="form-group">
+                    <div class="title-counter">
+                        <input type="text" id="postTitle" placeholder="Titre (max 100 caractères)" maxlength="100">
+                        <span class="char-counter"><span id="titleCharCount">0</span>/100</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea id="postContent" placeholder="Contenu de votre publication... (vous pouvez utiliser #hashtags)" maxlength="1000"></textarea>
+                    <span class="char-counter"><span id="contentCharCount">0</span>/1000</span>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="postImages" accept="image/*" multiple style="display: none;">
+                    <button class="btn-upload" id="uploadBtn">
+                        <i class="fas fa-image"></i> Ajouter des images (max 5)
+                    </button>
+                    <div class="images-preview" id="imagesPreview"></div>
+                </div>
+                <button class="btn-submit" id="submitPost">Publier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal search-modal" id="searchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="searchModalBack"><i class="fas fa-arrow-left"></i></button>
+                <div class="search-input-container">                    
+                    <input type="text" id="fullscreenSearch" placeholder="Rechercher des actualités, sources, sujets...">
+                </div>
+                <button class="modal-close" id="closeSearchModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-history" id="searchHistory" style="display: none;">
+                    <h4>Historique de recherche</h4>
+                    <div class="history-items" id="historyItems"></div>
+                    <button class="clear-history" id="clearHistory">Effacer l'historique</button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+                <div class="search-results" id="searchResults">
+                    <div class="search-initial-state">
+                        <i class="fas fa-search"></i>
+                        <p>Commencez à taper pour rechercher</p>
+                    </div>
+                </div>
+                <div class="search-filters" id="searchFilters" style="display: none;">
+                    <h4>Trier par</h4>
+                    <div class="filter-options">
+                        <div class="filter-option active" data-filter="relevant">Plus pertinent</div>
+                        <div class="filter-option" data-filter="recent">Plus récent</div>
+                        <div class="filter-option" data-filter="oldest">Plus ancien</div>
+                        <div class="filter-option" data-filter="week">Cette semaine</div>
+                        <div class="filter-option" data-filter="month">Ce mois</div>
+                        <div class="filter-option" data-filter="year">Cette année</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal profile-modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="profileModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3 id="profileUserName">Profil</h3>
+                <button class="modal-close" id="closeProfileModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-header">
+                    <div class="profile-image-container">
+                        <img src="https://via.placeholder.com/150" alt="Photo de profil" id="profileUserImage">
+                        <button class="edit-profile-pic" id="editProfilePic" style="display: none;">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h4 id="profileUserNameText">Nom d'utilisateur</h4>
+                        <p id="profileUserEmail">email@exemple.com</p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="stat-number" id="postCount">0</span>
+                                <span class="stat-label">Publications</span>
+                            </div>
+                        </div>
+                        <p id="profileBio" class="profile-bio">Aucune biographie</p>
+                        <button class="btn-edit-profile" id="editProfileBtn" style="display: none;">Modifier le profil</button>
+                    </div>
+                </div>
+                <div class="profile-posts" id="profilePosts">
+                    <!-- User posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal edit-profile-modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="editProfileModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Modifier le profil</h3>
+                <button class="modal-close" id="closeEditProfileModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Photo de profil</label>
+                    <div class="image-upload-container">
+                        <img src="https://via.placeholder.com/150" alt="Photo de profil" id="editProfileImage">
+                        <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+                        <button class="btn-upload-image" id="uploadProfileImage">Changer la photo</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Photo de couverture</label>
+                    <div class="image-upload-container">
+                        <img src="https://via.placeholder.com/800x200" alt="Photo de couverture" id="editCoverImage">
+                        <input type="file" id="coverImageUpload" accept="image/*" style="display: none;">
+                        <button class="btn-upload-image" id="uploadCoverImage">Changer la photo</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nom complet</label>
+                    <input type="text" id="editProfileName" placeholder="Votre nom">
+                </div>
+                <div class="form-group">
+                    <label>Biographie</label>
+                    <textarea id="editProfileBio" placeholder="Parlez de vous..." maxlength="200"></textarea>
+                    <span class="char-counter"><span id="bioCharCount">0</span>/200</span>
+                </div>
+                <button class="btn-submit" id="saveProfileChanges">Enregistrer les modifications</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal image-viewer-modal" id="imageViewerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="imageViewerModalBack"><i class="fas fa-arrow-left"></i></button>
+                <span id="imageViewerTitle">Image 1 sur 1</span>
+                <button class="modal-close" id="closeImageViewer">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img src="" alt="Image" id="viewedImage">
+                <button class="nav-btn prev-btn" id="prevImage"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-btn next-btn" id="nextImage"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div class="modal comments-modal" id="commentsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="commentsModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Commentaires</h3>
+                <button class="modal-close" id="closeCommentsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="post-in-modal" id="postInModal">
+                    <!-- Post content will be loaded here -->
+                </div>
+                <div class="comments-sort" id="commentsSort">
+                    <span>Trier par:</span>
+                    <select id="sortComments">
+                        <option value="recent">Plus récent</option>
+                        <option value="relevant">Plus pertinent</option>
+                        <option value="random">Aléatoire</option>
+                    </select>
+                </div>
+                <div class="comments-list" id="commentsList">
+                    <!-- Comments will be loaded here -->
+                </div>
+                <div class="add-comment">
+                    <input type="text" placeholder="Ajouter un commentaire..." id="commentInput">
+                    <button id="submitComment"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hashtag Modal -->
+    <div class="modal hashtag-modal" id="hashtagModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="hashtagModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3 id="hashtagTitle">#Hashtag</h3>
+                <button class="modal-close" id="closeHashtagModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="hashtag-info">
+                    <span id="hashtagPostCount">0 publications</span>
+                </div>
+                <div class="hashtag-posts" id="hashtagPosts">
+                    <!-- Posts with this hashtag will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="modal notifications-modal" id="notificationsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="notificationsModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Notifications</h3>
+                <button class="modal-close" id="closeNotificationsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Notifications will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Posts Modal -->
+    <div class="modal saved-posts-modal" id="savedPostsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="savedPostsModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>Publications enregistrées</h3>
+                <button class="modal-close" id="closeSavedPostsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="saved-posts-list" id="savedPostsList">
+                    <!-- Saved posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal about-modal" id="aboutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-back" id="aboutModalBack"><i class="fas fa-arrow-left"></i></button>
+                <h3>À propos de HSN</h3>
+                <button class="modal-close" id="closeAboutModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <h4>Hyper Speed News</h4>
+                    <p>HSN est une plateforme de partage d'actualités et d'informations en temps réel. Notre mission est de connecter les gens à travers le monde en partageant des contenus pertinents et intéressants.</p>
+                    <p>Version: 1.0.0</p>
+                    <p>Développé par Hasinirina Andrianarivo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données de l'application
+let currentUser = null;
+let posts = [];
+let users = [
+    { 
+        id: 1, 
+        name: "Hasinirina Andrianarivo", 
+        email: "hasinirinaandrianarivo446@gmail.com", 
+        password: "123", 
+        image: "hsn.png",
+        bio: "Fondateur de HSN - Hyper Speed News",
+        birthdate: "1990-01-01",
+        coverImage: "https://via.placeholder.com/800x200"
+    }
+];
+
+let stories = [];
+let categoriesData = {
+    "all": [],
+    "technology": [],
+    "science": [],
+    "politics": [],
+    "sports": [],
+    "business": [],
+    "entertainment": []
+};
+
+let searchHistory = [];
+let notifications = [];
+let savedPosts = [];
+
+// Éléments DOM
+const authButtons = document.getElementById('authButtons');
+const userProfile = document.getElementById('userProfile');
+const profilePic = document.getElementById('profilePic');
+const loginBtn = document.getElementById('loginBtn');
+const signupBtn = document.getElementById('signupBtn');
+const authModal = document.getElementById('authModal');
+const authModalBack = document.getElementById('authModalBack');
+const authModalClose = document.getElementById('authModalClose');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const switchToSignup = document.getElementById('switchToSignup');
+const switchToLogin = document.getElementById('switchToLogin');
+const loginSubmit = document.getElementById('loginSubmit');
+const signupSubmit = document.getElementById('signupSubmit');
+const floatingPostBtn = document.getElementById('floatingPostBtn');
+const postModal = document.getElementById('postModal');
+const postModalBack = document.getElementById('postModalBack');
+const closePostModal = document.getElementById('closePostModal');
+const submitPost = document.getElementById('submitPost');
+const uploadBtn = document.getElementById('uploadBtn');
+const postImages = document.getElementById('postImages');
+const imagesPreview = document.getElementById('imagesPreview');
+const newsFeed = document.getElementById('newsFeed');
+const searchInput = document.querySelector('.search-input');
+const searchModal = document.getElementById('searchModal');
+const searchModalBack = document.getElementById('searchModalBack');
+const fullscreenSearch = document.getElementById('fullscreenSearch');
+const closeSearchModal = document.getElementById('closeSearchModal');
+const searchResults = document.getElementById('searchResults');
+const searchHistoryDiv = document.getElementById('searchHistory');
+const historyItems = document.getElementById('historyItems');
+const clearHistory = document.getElementById('clearHistory');
+const searchFilters = document.getElementById('searchFilters');
+const titleCharCount = document.getElementById('titleCharCount');
+const contentCharCount = document.getElementById('contentCharCount');
+const postTitle = document.getElementById('postTitle');
+const postContent = document.getElementById('postContent');
+const selectedCategories = document.getElementById('selectedCategories');
+const categoryOptions = document.querySelectorAll('.category-option');
+const breakingStories = document.getElementById('breakingStories');
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const hamburgerModal = document.getElementById('hamburgerModal');
+const hamburgerModalBack = document.getElementById('hamburgerModalBack');
+const closeHamburgerModal = document.getElementById('closeHamburgerModal');
+const menuProfile = document.getElementById('menuProfile');
+const menuSavedPosts = document.getElementById('menuSavedPosts');
+const menuNotifications = document.getElementById('menuNotifications');
+const menuSettings = document.getElementById('menuSettings');
+const menuAbout = document.getElementById('menuAbout');
+const menuLogoutSection = document.getElementById('menuLogoutSection');
+const menuLogout = document.getElementById('menuLogout');
+const profileModal = document.getElementById('profileModal');
+const profileModalBack = document.getElementById('profileModalBack');
+const closeProfileModal = document.getElementById('closeProfileModal');
+const profilePosts = document.getElementById('profilePosts');
+const profileUserName = document.getElementById('profileUserName');
+const profileUserNameText = document.getElementById('profileUserNameText');
+const profileUserEmail = document.getElementById('profileUserEmail');
+const profileUserImage = document.getElementById('profileUserImage');
+const profileBio = document.getElementById('profileBio');
+const postCount = document.getElementById('postCount');
+const editProfileBtn = document.getElementById('editProfileBtn');
+const editProfilePic = document.getElementById('editProfilePic');
+const editProfileModal = document.getElementById('editProfileModal');
+const editProfileModalBack = document.getElementById('editProfileModalBack');
+const closeEditProfileModal = document.getElementById('closeEditProfileModal');
+const editProfileImage = document.getElementById('editProfileImage');
+const editCoverImage = document.getElementById('editCoverImage');
+const profileImageUpload = document.getElementById('profileImageUpload');
+const coverImageUpload = document.getElementById('coverImageUpload');
+const uploadProfileImage = document.getElementById('uploadProfileImage');
+const uploadCoverImage = document.getElementById('uploadCoverImage');
+const editProfileName = document.getElementById('editProfileName');
+const editProfileBio = document.getElementById('editProfileBio');
+const bioCharCount = document.getElementById('bioCharCount');
+const saveProfileChanges = document.getElementById('saveProfileChanges');
+const imageViewerModal = document.getElementById('imageViewerModal');
+const imageViewerModalBack = document.getElementById('imageViewerModalBack');
+const closeImageViewer = document.getElementById('closeImageViewer');
+const viewedImage = document.getElementById('viewedImage');
+const imageViewerTitle = document.getElementById('imageViewerTitle');
+const prevImage = document.getElementById('prevImage');
+const nextImage = document.getElementById('nextImage');
+const commentsModal = document.getElementById('commentsModal');
+const commentsModalBack = document.getElementById('commentsModalBack');
+const closeCommentsModal = document.getElementById('closeCommentsModal');
+const postInModal = document.getElementById('postInModal');
+const commentsList = document.getElementById('commentsList');
+const commentInput = document.getElementById('commentInput');
+const submitComment = document.getElementById('submitComment');
+const sortComments = document.getElementById('sortComments');
+const hashtagModal = document.getElementById('hashtagModal');
+const hashtagModalBack = document.getElementById('hashtagModalBack');
+const closeHashtagModal = document.getElementById('closeHashtagModal');
+const hashtagTitle = document.getElementById('hashtagTitle');
+const hashtagPostCount = document.getElementById('hashtagPostCount');
+const hashtagPosts = document.getElementById('hashtagPosts');
+const notificationsModal = document.getElementById('notificationsModal');
+const notificationsModalBack = document.getElementById('notificationsModalBack');
+const closeNotificationsModal = document.getElementById('closeNotificationsModal');
+const notificationsList = document.getElementById('notificationsList');
+const savedPostsModal = document.getElementById('savedPostsModal');
+const savedPostsModalBack = document.getElementById('savedPostsModalBack');
+const closeSavedPostsModal = document.getElementById('closeSavedPostsModal');
+const savedPostsList = document.getElementById('savedPostsList');
+const aboutModal = document.getElementById('aboutModal');
+const aboutModalBack = document.getElementById('aboutModalBack');
+const closeAboutModal = document.getElementById('closeAboutModal');
+const loginPasswordToggle = document.getElementById('loginPasswordToggle');
+const signupPasswordToggle = document.getElementById('signupPasswordToggle');
+const signupConfirmPasswordToggle = document.getElementById('signupConfirmPasswordToggle');
+const signupBirthdate = document.getElementById('signupBirthdate');
+const ageDisplay = document.getElementById('ageDisplay');
+const acceptTerms = document.getElementById('acceptTerms');
+
+// Variables d'état
+let lastScrollTop = 0;
+let selectedPostCategories = [];
+let currentPostImages = [];
+let currentImageViewerIndex = 0;
+let currentPostImagesArray = [];
+let currentCommentsPostId = null;
+let comments = [];
+let currentSearchFilter = 'relevant';
+let activeModal = null;
+let longPressTimer = null;
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    loadData();
+    checkAuth();
+    loadPosts();
+    setupEventListeners();
+    setupScrollHandling();
+});
+
+// Chargement des données
+function loadData() {
+    // Charger l'historique de recherche
+    const savedSearchHistory = localStorage.getItem('searchHistory');
+    if (savedSearchHistory) {
+        searchHistory = JSON.parse(savedSearchHistory);
+    }
+    
+    // Charger les posts sauvegardés
+    const savedPostsData = localStorage.getItem('savedPosts');
+    if (savedPostsData) {
+        savedPosts = JSON.parse(savedPostsData);
+    }
+    
+    // Charger les notifications
+    const savedNotifications = localStorage.getItem('notifications');
+    if (savedNotifications) {
+        notifications = JSON.parse(savedNotifications);
+    }
+}
+
+// Sauvegarde des données
+function saveData() {
+    localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+    localStorage.setItem('savedPosts', JSON.stringify(savedPosts));
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+}
+
+// Vérification de l'authentification
+function checkAuth() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateAuthUI();
+    }
+}
+
+// Mise à jour de l'UI en fonction de l'authentification
+function updateAuthUI() {
+    if (currentUser) {
+        authButtons.style.display = 'none';
+        userProfile.style.display = 'block';
+        profilePic.src = currentUser.image || "https://via.placeholder.com/40";
+        floatingPostBtn.style.display = 'flex';
+        menuLogoutSection.style.display = 'block';
+        
+        // Mettre à jour l'image de profil dans le header
+        const logoIcon = document.querySelector('.logo-icon');
+        if (logoIcon) {
+            logoIcon.style.display = 'none';
+        }
+        
+        // Ajouter l'image de profil à la place du logo
+        const logo = document.querySelector('.logo');
+        if (logo && !logo.querySelector('.profile-pic')) {
+            const profilePicClone = profilePic.cloneNode(true);
+            profilePicClone.style.width = '60px';
+            profilePicClone.style.height = '60px';
+            logo.innerHTML = '';
+            logo.appendChild(profilePicClone);
+            logo.appendChild(document.createTextNode('HSN'));
+        }
+    } else {
+        authButtons.style.display = 'flex';
+        userProfile.style.display = 'none';
+        floatingPostBtn.style.display = 'none';
+        menuLogoutSection.style.display = 'none';
+        
+        // Rétablir le logo H
+        const logo = document.querySelector('.logo');
+        if (logo) {
+            logo.innerHTML = '';
+            const logoIcon = document.createElement('div');
+            logoIcon.className = 'logo-icon';
+            logoIcon.textContent = 'H';
+            logo.appendChild(logoIcon);
+            logo.appendChild(document.createTextNode('HSN'));
+        }
+    }
+}
+
+// Algorithme de pertinence pour les stories
+function calculateRelevanceScore(post) {
+    let score = 0;
+    
+    // Facteur de temps (les posts récents ont plus de poids)
+    const hoursAgo = (new Date() - new Date(post.timestamp)) / (1000 * 60 * 60);
+    if (hoursAgo < 1) score += 50; // Moins d'1 heure
+    else if (hoursAgo < 6) score += 30; // Moins de 6 heures
+    else if (hoursAgo < 24) score += 15; // Moins de 24 heures
+    
+    // Facteur d'engagement (likes, commentaires, partages)
+    score += post.likes * 2;
+    score += post.comments * 3;
+    score += post.shares * 4;
+    
+    // Bonus pour les posts avec images
+    if (post.images && post.images.length > 0) {
+        score += 20;
+    }
+    
+    // Bonus pour les posts avec hashtags populaires
+    const popularHashtags = ['breaking', 'urgent', 'exclusif', 'actualité', 'news'];
+    post.tags.forEach(tag => {
+        if (popularHashtags.includes(tag.toLowerCase())) {
+            score += 15;
+        }
+    });
+    
+    // Bonus pour les posts de l'utilisateur connecté
+    if (currentUser && post.userId === currentUser.id) {
+        score += 10;
+    }
+    
+    return score;
+}
+
+// Sélection des stories les plus pertinentes
+function getTopStories(posts, limit = 5) {
+    // Calculer le score de pertinence pour chaque post
+    const postsWithScores = posts.map(post => ({
+        ...post,
+        relevanceScore: calculateRelevanceScore(post)
+    }));
+    
+    // Trier par score de pertinence (décroissant)
+    const sortedPosts = postsWithScores.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    
+    // Prendre les posts les plus pertinents
+    return sortedPosts.slice(0, limit);
+}
+
+// Conversion d'un post en story
+function postToStory(post, index) {
+    const timeAgo = getTimeAgo(post.timestamp);
+    const isBreaking = index === 0; // Le premier post est considéré comme "breaking"
+    const isFeatured = index === 0; // Le post le plus pertinent est mis en avant
+    
+    return {
+        id: post.id,
+        title: post.title.length > 80 ? post.title.substring(0, 80) + '...' : post.title,
+        time: timeAgo,
+        source: post.userName,
+        image: post.images && post.images.length > 0 ? post.images[0] : getDefaultStoryImage(post.category),
+        isBreaking: isBreaking,
+        isFeatured: isFeatured,
+        likes: post.likes,
+        comments: post.comments,
+        category: post.categories[0] || 'general',
+        fullContent: post.content,
+        relevanceScore: post.relevanceScore
+    };
+}
+
+// Image par défaut selon la catégorie
+function getDefaultStoryImage(category) {
+    const categoryImages = {
+        'technology': 'https://via.placeholder.com/280x160/667eea/FFFFFF?text=Tech',
+        'science': 'https://via.placeholder.com/280x160/4ECDC4/FFFFFF?text=Science',
+        'politics': 'https://via.placeholder.com/280x160/45B7D1/FFFFFF?text=Politique',
+        'sports': 'https://via.placeholder.com/280x160/F7DC6F/FFFFFF?text=Sports',
+        'business': 'https://via.placeholder.com/280x160/BB8FCE/FFFFFF?text=Business',
+        'entertainment': 'https://via.placeholder.com/280x160/85C1E9/FFFFFF?text=Divertissement',
+        'general': 'https://via.placeholder.com/280x160/666666/FFFFFF?text=Actualité'
+    };
+    
+    return categoryImages[category] || categoryImages.general;
+}
+
+// Chargement et affichage des stories
+function loadStories() {
+    const storiesSection = document.getElementById('storiesSection');
+    const storiesContainer = document.getElementById('storiesContainer');
+    
+    // Vérifier si on est sur la page "À la une"
+    const activeCategory = document.querySelector('.nav-item.active').dataset.category;
+    
+    if (activeCategory !== 'all') {
+        // Masquer les stories si on n'est pas sur "À la une"
+        storiesSection.classList.remove('active');
+        return;
+    }
+    
+    // Afficher les stories seulement sur "À la une"
+    storiesSection.classList.add('active');
+    
+    // Vider le conteneur
+    storiesContainer.innerHTML = '';
+    
+    // Obtenir les posts les plus pertinents
+    const topStories = getTopStories(posts, 5);
+    
+    if (topStories.length === 0) {
+        storiesContainer.innerHTML = `
+            <div class="no-stories">
+                <i class="fas fa-newspaper"></i>
+                <p>Aucune actualité pertinente pour le moment</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Convertir les posts en stories et les afficher
+    topStories.forEach((post, index) => {
+        const story = postToStory(post, index);
+        const storyElement = createStoryElement(story);
+        storiesContainer.appendChild(storyElement);
+    });
+}
+
+// Création d'un élément story
+function createStoryElement(story) {
+    const storyDiv = document.createElement('div');
+    storyDiv.className = `story-item ${story.isFeatured ? 'featured' : ''}`;
+    storyDiv.dataset.storyId = story.id;
+    storyDiv.dataset.relevanceScore = story.relevanceScore;
+    
+    storyDiv.innerHTML = `
+        ${story.isBreaking ? '<div class="story-breaking">BREAKING</div>' : ''}
+        <div class="story-stats">
+            <div class="story-stat">
+                <i class="fas fa-heart"></i> ${story.likes}
+            </div>
+            <div class="story-stat">
+                <i class="fas fa-comment"></i> ${story.comments}
+            </div>
+        </div>
+        <img src="${story.image}" alt="${story.title}" class="story-image" 
+             onerror="this.src='https://via.placeholder.com/280x160/666666/FFFFFF?text=Image+Non+Disponible'">
+        <div class="story-gradient"></div>
+        <div class="story-content">
+            <div class="story-title">${story.title}</div>
+            <div class="story-meta">
+                <span class="story-time">${story.time}</span>
+                <span class="story-source">${story.source}</span>
+            </div>
+        </div>
+    `;
+    
+    // Ajouter l'événement de clic
+    storyDiv.addEventListener('click', () => {
+        openStoryModal(story);
+    });
+    
+    return storyDiv;
+}
+
+// Modal pour afficher le story complet
+function openStoryModal(story) {
+    // Créer le modal si il n'existe pas
+    let storyModal = document.getElementById('storyModal');
+    
+    if (!storyModal) {
+        storyModal = document.createElement('div');
+        storyModal.id = 'storyModal';
+        storyModal.className = 'modal story-modal';
+        storyModal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="modal-back" id="storyModalBack"><i class="fas fa-arrow-left"></i></button>
+                    <h3>Actualité</h3>
+                    <button class="modal-close" id="closeStoryModal">&times;</button>
+                </div>
+                <div class="modal-body" id="storyModalBody">
+                    <!-- Le contenu sera inséré ici -->
+                </div>
+            </div>
+        `;
+        document.body.appendChild(storyModal);
+        
+        // Ajouter les événements
+        document.getElementById('closeStoryModal').addEventListener('click', () => {
+            closeModal(storyModal);
+        });
+        
+        document.getElementById('storyModalBack').addEventListener('click', () => {
+            closeModal(storyModal);
+        });
+        
+        storyModal.addEventListener('click', (e) => {
+            if (e.target === storyModal) {
+                closeModal(storyModal);
+            }
+        });
+    }
+    
+    // Remplir le contenu
+    const modalBody = document.getElementById('storyModalBody');
+    modalBody.innerHTML = `
+        <div class="story-modal-image">
+            <img src="${story.image}" alt="${story.title}">
+            ${story.isBreaking ? '<div class="story-modal-breaking">BREAKING NEWS</div>' : ''}
+        </div>
+        <div class="story-modal-content">
+            <div class="story-modal-header">
+                <h1>${story.title}</h1>
+                <div class="story-modal-meta">
+                    <span class="source">Source: ${story.source}</span>
+                    <span class="time">${story.time}</span>
+                    <span class="relevance">Pertinence: ${story.relevanceScore} pts</span>
+                </div>
+            </div>
+            <div class="story-modal-text">
+                <p>${story.fullContent}</p>
+            </div>
+            <div class="story-modal-actions">
+                <button class="btn-like-story" onclick="likeStoryPost(${story.id})">
+                    <i class="fas fa-heart"></i> J'aime (${story.likes})
+                </button>
+                <button class="btn-comment-story" onclick="commentOnStoryPost(${story.id})">
+                    <i class="fas fa-comment"></i> Commenter (${story.comments})
+                </button>
+                <button class="btn-share-story" onclick="shareStory(${story.id})">
+                    <i class="fas fa-share"></i> Partager
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Afficher le modal
+    openModal(storyModal);
+}
+
+// CSS pour le modal story
+const storyModalCSS = `
+.story-modal .modal-content {
+    max-width: 800px;
+    height: 90vh;
+    border-radius: 12px;
+}
+
+.story-modal-image {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.story-modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-modal-breaking {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(45deg, #ff4444, #ff6b6b);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.story-modal-content {
+    padding: 24px;
+    max-height: calc(90vh - 250px);
+    overflow-y: auto;
+}
+
+.story-modal-header h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    color: var(--text-primary);
+}
+
+.story-modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.story-modal-meta .relevance {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.story-modal-text {
+    line-height: 1.6;
+    margin-bottom: 24px;
+    font-size: 16px;
+}
+
+.story-modal-text p {
+    margin-bottom: 15px;
+}
+
+.story-modal-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+
+.btn-like-story, .btn-comment-story, .btn-share-story {
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.btn-like-story:hover, .btn-comment-story:hover, .btn-share-story:hover {
+    background: var(--light-gray);
+}
+
+.btn-like-story.active {
+    background: #ff4444;
+    color: white;
+    border-color: #ff4444;
+}
+
+.no-stories {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+
+.no-stories i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .story-modal .modal-content {
+        height: 100vh;
+        border-radius: 0;
+    }
+    
+    .story-modal-image {
+        height: 200px;
+    }
+    
+    .story-modal-content {
+        padding: 16px;
+        max-height: calc(100vh - 200px);
+    }
+    
+    .story-modal-header h1 {
+        font-size: 20px;
+    }
+    
+    .story-modal-actions {
+        flex-direction: column;
+    }
+}
+`;
+
+// Ajouter le CSS au document
+const styleSheet = document.createElement('style');
+styleSheet.textContent = storyModalCSS;
+document.head.appendChild(styleSheet);
+
+// Interactions avec les stories
+function likeStoryPost(storyId) {
+    const post = posts.find(p => p.id === storyId);
+    if (post) {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour aimer', 'error');
+            openModal(authModal);
+            return;
+        }
+        
+        post.likes++;
+        showNotification('Post aimé!', 'success');
+        
+        // Mettre à jour l'affichage
+        const likeBtn = document.querySelector('.btn-like-story');
+        likeBtn.innerHTML = `<i class="fas fa-heart"></i> J'aime (${post.likes})`;
+        likeBtn.classList.add('active');
+        
+        // Recalculer la pertinence et recharger les stories
+        setTimeout(() => {
+            loadStories();
+        }, 1000);
+    }
+}
+
+function commentOnStoryPost(storyId) {
+    openCommentsModal(storyId);
+}
+
+function shareStory(storyId) {
+    const story = posts.find(p => p.id === storyId);
+    if (story) {
+        if (navigator.share) {
+            navigator.share({
+                title: story.title,
+                text: story.content.substring(0, 100) + '...',
+                url: window.location.href
+            });
+        } else {
+            const shareText = `${story.title} - ${story.source}`;
+            navigator.clipboard.writeText(shareText);
+            showNotification('Lien copié dans le presse-papier', 'success');
+        }
+    }
+}
+
+// Surveillance des changements de catégorie
+function setupStoriesCategoryListener() {
+    // Écouter les clics sur les catégories
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            // Recharger les stories après un court délai
+            setTimeout(() => {
+                loadStories();
+            }, 100);
+        });
+    });
+    
+    // Écouter les changements de posts
+    const originalRenderPosts = renderPosts;
+    window.renderPosts = function(filteredPosts = null) {
+        originalRenderPosts(filteredPosts);
+        loadStories(); // Recharger les stories quand les posts changent
+    };
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    setupStoriesCategoryListener();
+    loadStories();
+});
+
+// Recharger les stories quand de nouveaux posts sont ajoutés
+const originalHandlePostSubmit = handlePostSubmit;
+window.handlePostSubmit = function() {
+    originalHandlePostSubmit();
+    // Recharger les stories après la publication
+    setTimeout(() => {
+        loadStories();
+    }, 500);
+};
+
+
+// Chargement des posts
+function loadPosts() {
+    // Simulation de chargement
+    newsFeed.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    
+    // Simuler un délai de chargement
+    setTimeout(() => {
+        // Ici, vous pourriez charger les posts depuis une API
+        // Pour l'exemple, nous utilisons des données simulées
+        if (posts.length === 0) {
+            posts = [
+                {
+                    id: 1,
+                    userId: 1,
+                    userName: "Hasinirina Andrianarivo",
+                    userImage: "hsn.png",
+                    title: "Bienvenue sur HSN!",
+                    content: "Découvrez les dernières actualités et partagez vos propres publications avec la communauté. #Bienvenue #Actualités. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                    images: ["https://via.placeholder.com/500x300?text=HSN"],
+                    categories: ["technology", "science"],
+                    tags: ["Bienvenue", "Actualités"],
+                    timestamp: new Date(Date.now() - 3600000),
+                    likes: 15,
+                    comments: 3,
+                    shares: 2,
+                    reactions: { like: 10, love: 5 },
+                    saved: false
+                },
+                {
+                    id: 2,
+                    userId: 1,
+                    userName: "Hasinirina Andrianarivo",
+                    userImage: "hsn.png",
+                    title: "Nouvelle fonctionnalité",
+                    content: "Nous avons ajouté de nouvelles fonctionnalités à la plateforme! #Innovation #Technologie",
+                    images: ["https://via.placeholder.com/500x300?text=Image1", "https://via.placeholder.com/500x300?text=Image2"],
+                    categories: ["technology"],
+                    tags: ["Innovation", "Technologie"],
+                    timestamp: new Date(Date.now() - 7200000),
+                    likes: 25,
+                    comments: 5,
+                    shares: 3,
+                    reactions: { like: 15, love: 10 },
+                    saved: false
+                },
+                {
+                    id: 3,
+                    userId: 1,
+                    userName: "Hasinirina Andrianarivo",
+                    userImage: "hsn.png",
+                    title: "Multiples images",
+                    content: "Test d'affichage de plusieurs images dans une publication #Test #Images",
+                    images: [
+                        "https://via.placeholder.com/500x300?text=Image1",
+                        "https://via.placeholder.com/500x300?text=Image2",
+                        "https://via.placeholder.com/500x300?text=Image3",
+                        "https://via.placeholder.com/500x300?text=Image4",
+                        "https://via.placeholder.com/500x300?text=Image5"
+                    ],
+                    categories: ["technology"],
+                    tags: ["Test", "Images"],
+                    timestamp: new Date(Date.now() - 10800000),
+                    likes: 8,
+                    comments: 2,
+                    shares: 1,
+                    reactions: { like: 5, love: 3 },
+                    saved: false
+                }
+            ];
+            
+            // Organiser les posts par catégories
+            organizePostsByCategory();
+        }
+        
+        renderPosts();
+        loadStories();
+    }, 1000);
+}
+
+// Organisation des posts par catégorie
+function organizePostsByCategory() {
+    // Réinitialiser les catégories
+    for (const category in categoriesData) {
+        categoriesData[category] = [];
+    }
+    
+    // Ajouter les posts aux catégories correspondantes
+    posts.forEach(post => {
+        // Ajouter à "all"
+        categoriesData.all.push(post);
+        
+        // Ajouter aux catégories spécifiques
+        post.categories.forEach(category => {
+            if (categoriesData[category]) {
+                categoriesData[category].push(post);
+            }
+        });
+    });
+}
+
+// Affichage des posts
+function renderPosts(filteredPosts = null) {
+    const activeCategory = document.querySelector('.nav-item.active').dataset.category;
+    const postsToRender = filteredPosts || categoriesData[activeCategory] || [];
+    
+    if (postsToRender.length === 0) {
+        newsFeed.innerHTML = '<div class="no-posts">Aucune publication trouvée</div>';
+        return;
+    }
+    
+    newsFeed.innerHTML = '';
+    
+    postsToRender.forEach(post => {
+        const postElement = createPostElement(post);
+        newsFeed.appendChild(postElement);
+    });
+}
+
+// Création d'un élément de post
+function createPostElement(post) {
+    const postEl = document.createElement('div');
+    postEl.className = 'post';
+    postEl.dataset.id = post.id;
+    
+    const timeAgo = getTimeAgo(post.timestamp);
+    const tagsHtml = post.tags.map(tag => `<span class="post-tag" onclick="openHashtagModal('${tag}')">#${tag}</span>`).join(' ');
+    
+    // Gestion des images
+    let imagesHtml = '';
+    if (post.images && post.images.length > 0) {
+        const imageCount = post.images.length;
+        let gridClass = 'single';
+        
+        if (imageCount === 2) {
+            gridClass = 'double';
+        } else if (imageCount === 3) {
+            gridClass = 'triple';
+        } else if (imageCount === 4) {
+            gridClass = 'quadruple';
+        } else if (imageCount > 4) {
+            gridClass = 'multiple';
+        }
+        
+        imagesHtml = `<div class="post-images-grid ${gridClass}">`;
+        
+        post.images.forEach((img, index) => {
+            if (index < 4) { // Afficher max 4 images dans la grille
+                if (index === 3 && imageCount > 4) {
+                    imagesHtml += `
+                        <div class="more-images-overlay" onclick="openImageViewer(${post.id}, ${index})">
+                            <img src="${img}" alt="Post image">
+                            <div class="more-images-count">+${imageCount - 3}</div>
+                        </div>
+                    `;
+                } else {
+                    imagesHtml += `<img src="${img}" alt="Post image" onclick="openImageViewer(${post.id}, ${index})">`;
+                }
+            }
+        });
+        
+        imagesHtml += '</div>';
+    }
+    
+    // Vérifier si le texte est long
+    const isLongText = post.content.length > 200;
+    const shortText = isLongText ? post.content.substring(0, 1000) + '' : post.content;
+    
+    // Vérifier si le post est sauvegardé
+    const isSaved = savedPosts.some(savedPost => savedPost.id === post.id);
+    
+    postEl.innerHTML = `
+        <div class="post-header">
+            <div class="post-user" onclick="openProfileModal(${post.userId})">
+                <img src="${post.userImage}" alt="${post.userName}" class="userimg">
+                <div class="post-user-info">
+                    <h4>${post.userName}</h4>
+                    <span class="post-time">${timeAgo}</span>
+                </div>
+            </div>
+            ${currentUser ? `
+            <div class="post-actions-menu">
+                <button class="post-menu-btn">⋯</button>
+                <div class="post-menu-dropdown">
+                    <div class="post-menu-item" onclick="toggleSavePost(${post.id})">
+                        <i class="fas fa-bookmark"></i>
+                        ${isSaved ? 'Retirer des enregistrés' : 'Enregistrer'}
+                    </div>
+                    ${currentUser && currentUser.id === post.userId ? `
+                    <div class="post-menu-item" onclick="editPost(${post.id})">Modifier</div>
+                    <div class="post-menu-item" onclick="deletePost(${post.id})">Supprimer</div>
+                    ` : ''}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+        <div class="post-content">
+            <h3 class="post-title">${post.title}</h3>
+            <p class="post-text ${isLongText ? 'collapsed' : ''}">${isLongText ? shortText : post.content}</p>
+            ${isLongText ? '<button class="see-more-btn" onclick="toggleSeeMore(this)">Voir plus</button>' : ''}
+            ${imagesHtml}
+            <div class="post-tags">${tagsHtml}</div>
+        </div>
+        <div class="post-actions">
+            <div class="post-action" 
+                 onclick="handleLikeClick(${post.id})" 
+                 onmousedown="startLongPress(${post.id})" 
+                 onmouseup="endLongPress()" 
+                 onmouseleave="endLongPress()"
+                 ontouchstart="startLongPress(${post.id})" 
+                 ontouchend="endLongPress()">
+                <div class="reaction-options">
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'like')">👍</span>
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'love')">❤️</span>
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'haha')">😄</span>
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'wow')">😲</span>
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'sad')">😢</span>
+                    <span class="reaction-option" onclick="addReaction(${post.id}, 'angry')">😠</span>
+                </div>
+                <i class="${getReactionIcon(post)}"></i>
+                <span>${post.likes}</span>
+            </div>
+            <div class="post-action" onclick="handleCommentClick(${post.id})">
+                <i class="far fa-comment"></i>
+                <span>${post.comments}</span>
+            </div>
+            <div class="post-action" onclick="sharePost(${post.id})">
+                <i class="fas fa-share"></i>
+                <span>${post.shares}</span>
+            </div>
+        </div>
+        <div class="comments-preview" id="comments-${post.id}">
+            <!-- Comments preview will be loaded here when toggled -->
+        </div>
+    `;
+    
+    return postEl;
+}
+
+// Gestion du clic sur like (simple clic)
+function handleLikeClick(postId) {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+        return; // Ne pas traiter comme un clic simple si c'était un appui long
+    }
+    
+    addReaction(postId, 'like');
+}
+
+// Détection de l'appui long pour les réactions
+function startLongPress(postId) {
+    longPressTimer = setTimeout(() => {
+        showReactionsForPost(postId);
+        longPressTimer = null;
+    }, 1000); // 1 seconde pour l'appui long
+}
+
+function endLongPress() {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+}
+
+function showReactionsForPost(postId) {
+    const postAction = document.querySelector(`.post[data-id="${postId}"] .post-action`);
+    if (postAction) {
+        const reactions = postAction.querySelector('.reaction-options');
+        reactions.classList.add('show');
+        
+        // Fermer les réactions après un délai
+        setTimeout(() => {
+            if (reactions.classList.contains('show')) {
+                reactions.classList.remove('show');
+            }
+        }, 3000);
+    }
+}
+
+// Gestion du clic sur commentaire (simple/double clic)
+let commentClickTime = 0;
+let commentPostId = null;
+
+function handleCommentClick(postId) {
+    const now = Date.now();
+    
+    if (commentPostId === postId && now - commentClickTime < 300) {
+        // Double-clic détecté, ouvrir le modal complet
+        openCommentsModal(postId);
+        commentClickTime = 0;
+        commentPostId = null;
+    } else {
+        // Simple clic, afficher/masquer l'aperçu
+        commentClickTime = now;
+        commentPostId = postId;
+        
+        const commentsPreview = document.getElementById(`comments-${postId}`);
+        if (commentsPreview.classList.contains('show')) {
+            commentsPreview.classList.remove('show');
+        } else {
+            // Charger les commentaires
+            loadCommentsPreview(postId, commentsPreview);
+            commentsPreview.classList.add('show');
+        }
+        
+        // Réinitialiser après un délai
+        setTimeout(() => {
+            if (now === commentClickTime) {
+                commentClickTime = 0;
+                commentPostId = null;
+            }
+        }, 300);
+    }
+}
+
+// Formatage du temps écoulé
+function getTimeAgo(date) {
+    const now = new Date();
+    const diff = now - date;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (seconds < 60) {
+        return "à l'instant";
+    } else if (minutes < 60) {
+        return `il y a ${minutes} min`;
+    } else if (hours < 24) {
+        return `il y a ${hours} h`;
+    } else if (days === 1) {
+        return "hier";
+    } else {
+        return `il y a ${days} j`;
+    }
+}
+
+// Configuration des écouteurs d'événements
+function setupEventListeners() {
+    // Authentification
+    loginBtn.addEventListener('click', () => {
+        openModal(authModal);
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        document.getElementById('authModalTitle').textContent = 'Connexion';
+    });
+    
+    authModalBack.addEventListener('click', () => closeModal(authModal));
+    authModalClose.addEventListener('click', () => closeModal(authModal));
+    authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) closeModal(authModal);
+    });
+    
+    switchToSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        document.getElementById('authModalTitle').textContent = 'Inscription';
+    });
+    
+    switchToLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        document.getElementById('authModalTitle').textContent = 'Connexion';
+    });
+    
+    loginSubmit.addEventListener('click', handleLogin);
+    signupSubmit.addEventListener('click', handleSignup);
+    
+    // Masquer/afficher les mots de passe
+    loginPasswordToggle.addEventListener('click', () => {
+        togglePasswordVisibility('loginPassword', loginPasswordToggle);
+    });
+    
+    signupPasswordToggle.addEventListener('click', () => {
+        togglePasswordVisibility('signupPassword', signupPasswordToggle);
+    });
+    
+    signupConfirmPasswordToggle.addEventListener('click', () => {
+        togglePasswordVisibility('signupConfirmPassword', signupConfirmPasswordToggle);
+    });
+    
+    // Date de naissance
+    signupBirthdate.addEventListener('change', calculateAge);
+    
+    // Publication
+    floatingPostBtn.addEventListener('click', () => {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour publier', 'error');
+            openModal(authModal);
+            return;
+        }
+        openModal(postModal);
+    });
+    
+    postModalBack.addEventListener('click', () => closeModal(postModal));
+    closePostModal.addEventListener('click', () => {
+        closeModal(postModal);
+        resetPostForm();
+    });
+    
+    postModal.addEventListener('click', (e) => {
+        if (e.target === postModal) {
+            closeModal(postModal);
+            resetPostForm();
+        }
+    });
+    
+    submitPost.addEventListener('click', handlePostSubmit);
+    uploadBtn.addEventListener('click', () => postImages.click());
+    
+    postImages.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            if (files.length + currentPostImages.length > 5) {
+                showNotification('Maximum 5 images autorisées', 'error');
+                return;
+            }
+            
+            Array.from(files).forEach(file => {
+                if (currentPostImages.length < 5) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        currentPostImages.push(event.target.result);
+                        updateImagesPreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+    
+    // Compteur de caractères
+    postTitle.addEventListener('input', () => {
+        titleCharCount.textContent = postTitle.value.length;
+    });
+    
+    postContent.addEventListener('input', () => {
+        contentCharCount.textContent = postContent.value.length;
+        
+        // Ajuster la hauteur automatiquement
+        postContent.style.height = 'auto';
+        postContent.style.height = Math.min(postContent.scrollHeight, 300) + 'px';
+    });
+    
+    // Sélection des catégories
+    categoryOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const category = option.dataset.category;
+            toggleCategory(category, option);
+        });
+    });
+    
+    // Recherche
+    searchInput.addEventListener('click', () => {
+        openModal(searchModal);
+        fullscreenSearch.focus();
+    });
+    
+    searchModalBack.addEventListener('click', () => closeModal(searchModal));
+    closeSearchModal.addEventListener('click', () => closeModal(searchModal));
+    searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) closeModal(searchModal);
+    });
+    
+    fullscreenSearch.addEventListener('input', handleSearchInput);
+    
+    // Historique de recherche
+    clearHistory.addEventListener('click', clearSearchHistory);
+    
+    // Filtres de recherche
+    document.querySelectorAll('.filter-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.filter-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            option.classList.add('active');
+            currentSearchFilter = option.dataset.filter;
+            performSearch(fullscreenSearch.value.trim());
+        });
+    });
+    
+    // Menu hamburger
+    hamburgerBtn.addEventListener('click', () => {
+        openModal(hamburgerModal);
+    });
+    
+    hamburgerModalBack.addEventListener('click', () => closeModal(hamburgerModal));
+    closeHamburgerModal.addEventListener('click', () => closeModal(hamburgerModal));
+    hamburgerModal.addEventListener('click', (e) => {
+        if (e.target === hamburgerModal) closeModal(hamburgerModal);
+    });
+    
+    // Options du menu
+    menuProfile.addEventListener('click', () => {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour accéder à votre profil', 'error');
+            openModal(authModal);
+            return;
+        }
+        closeModal(hamburgerModal);
+        openProfileModal(currentUser.id);
+    });
+    
+    menuSavedPosts.addEventListener('click', () => {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour accéder aux publications enregistrées', 'error');
+            openModal(authModal);
+            return;
+        }
+        closeModal(hamburgerModal);
+        openSavedPostsModal();
+    });
+    
+    menuNotifications.addEventListener('click', () => {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour accéder aux notifications', 'error');
+            openModal(authModal);
+            return;
+        }
+        closeModal(hamburgerModal);
+        openNotificationsModal();
+    });
+    
+    menuSettings.addEventListener('click', () => {
+        closeModal(hamburgerModal);
+        // Ouvrir les paramètres (à implémenter)
+        showNotification('Fonctionnalité à venir', 'info');
+    });
+    
+    menuAbout.addEventListener('click', () => {
+        closeModal(hamburgerModal);
+        openAboutModal();
+    });
+    
+    menuLogout.addEventListener('click', handleLogout);
+    
+    // Profil
+    profilePic.addEventListener('click', () => {
+        if (!currentUser) {
+            showNotification('Connectez-vous pour accéder à votre profil', 'error');
+            openModal(authModal);
+            return;
+        }
+        openProfileModal(currentUser.id);
+    });
+    
+    profileModalBack.addEventListener('click', () => closeModal(profileModal));
+    closeProfileModal.addEventListener('click', () => closeModal(profileModal));
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal) closeModal(profileModal);
+    });
+    
+    editProfileBtn.addEventListener('click', () => {
+        closeModal(profileModal);
+        openEditProfileModal();
+    });
+    
+    editProfilePic.addEventListener('click', () => {
+        profileImageUpload.click();
+    });
+    
+    // Édition du profil
+    editProfileModalBack.addEventListener('click', () => closeModal(editProfileModal));
+    closeEditProfileModal.addEventListener('click', () => closeModal(editProfileModal));
+    editProfileModal.addEventListener('click', (e) => {
+        if (e.target === editProfileModal) closeModal(editProfileModal);
+    });
+    
+    uploadProfileImage.addEventListener('click', () => {
+        profileImageUpload.click();
+    });
+    
+    uploadCoverImage.addEventListener('click', () => {
+        coverImageUpload.click();
+    });
+    
+    profileImageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                editProfileImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    coverImageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                editCoverImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    editProfileBio.addEventListener('input', () => {
+        bioCharCount.textContent = editProfileBio.value.length;
+    });
+    
+    saveProfileChanges.addEventListener('click', saveProfile);
+    
+    // Visionneuse d'images
+    imageViewerModalBack.addEventListener('click', () => closeModal(imageViewerModal));
+    closeImageViewer.addEventListener('click', () => closeModal(imageViewerModal));
+    imageViewerModal.addEventListener('click', (e) => {
+        if (e.target === imageViewerModal) closeModal(imageViewerModal);
+    });
+    
+    prevImage.addEventListener('click', () => navigateImage(-1));
+    nextImage.addEventListener('click', () => navigateImage(1));
+    
+    // Commentaires
+    commentsModalBack.addEventListener('click', () => closeModal(commentsModal));
+    closeCommentsModal.addEventListener('click', () => closeModal(commentsModal));
+    commentsModal.addEventListener('click', (e) => {
+        if (e.target === commentsModal) closeModal(commentsModal);
+    });
+    
+    submitComment.addEventListener('click', handleCommentSubmit);
+    commentInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleCommentSubmit();
+        }
+    });
+    
+    sortComments.addEventListener('change', () => {
+        if (currentCommentsPostId) {
+            loadComments(currentCommentsPostId);
+        }
+    });
+    
+    // Hashtag
+    hashtagModalBack.addEventListener('click', () => closeModal(hashtagModal));
+    closeHashtagModal.addEventListener('click', () => closeModal(hashtagModal));
+    hashtagModal.addEventListener('click', (e) => {
+        if (e.target === hashtagModal) closeModal(hashtagModal);
+    });
+    
+    // Notifications
+    notificationsModalBack.addEventListener('click', () => closeModal(notificationsModal));
+    closeNotificationsModal.addEventListener('click', () => closeModal(notificationsModal));
+    notificationsModal.addEventListener('click', (e) => {
+        if (e.target === notificationsModal) closeModal(notificationsModal);
+    });
+    
+    // Publications enregistrées
+    savedPostsModalBack.addEventListener('click', () => closeModal(savedPostsModal));
+    closeSavedPostsModal.addEventListener('click', () => closeModal(savedPostsModal));
+    savedPostsModal.addEventListener('click', (e) => {
+        if (e.target === savedPostsModal) closeModal(savedPostsModal);
+    });
+    
+    // À propos
+    aboutModalBack.addEventListener('click', () => closeModal(aboutModal));
+    closeAboutModal.addEventListener('click', () => closeModal(aboutModal));
+    aboutModal.addEventListener('click', (e) => {
+        if (e.target === aboutModal) closeModal(aboutModal);
+    });
+    
+    // Navigation par catégories
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            item.classList.add('active');
+            renderPosts();
+            loadStories();
+        });
+    });
+    
+    // Menu déroulant des posts
+    document.addEventListener('click', (e) => {
+        // Fermer les menus déroulants lorsqu'on clique ailleurs
+        if (!e.target.closest('.post-actions-menu')) {
+            document.querySelectorAll('.post-menu-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
+        
+        // Ouvrir/fermer le menu déroulant
+        if (e.target.classList.contains('post-menu-btn')) {
+            const dropdown = e.target.nextElementSibling;
+            const isShowing = dropdown.classList.contains('show');
+            
+            // Fermer tous les autres menus
+            document.querySelectorAll('.post-menu-dropdown').forEach(d => {
+                d.classList.remove('show');
+            });
+            
+            // Ouvrir/fermer ce menu
+            if (!isShowing) {
+                dropdown.classList.add('show');
+            }
+        }
+    });
+    
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'k') {
+            e.preventDefault();
+            openModal(searchModal);
+            fullscreenSearch.focus();
+        }
+        
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+}
+
+// Configuration de la gestion du défilement
+function setupScrollHandling() {
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Masquer/afficher la navbar et le header lors du défilement
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            document.querySelector('.header').classList.add('hidden');
+            document.querySelector('.nav-bar').classList.add('hidden');
+        } else {
+            document.querySelector('.header').classList.remove('hidden');
+            document.querySelector('.nav-bar').classList.remove('hidden');
+        }
+        
+        lastScrollTop = scrollTop;
+        
+        // Chargement infini
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000 && !isLoading) {
+            loadMorePosts();
+        }
+    });
+}
+
+// Gestion des modals
+function openModal(modal) {
+    // Fermer tout modal ouvert
+    closeAllModals();
+    
+    // Ouvrir le nouveau modal
+    modal.classList.add('active');
+    activeModal = modal;
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modal) {
+    modal.classList.remove('active');
+    activeModal = null;
+    document.body.style.overflow = 'auto';
+}
+
+function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('active');
+    });
+    activeModal = null;
+    document.body.style.overflow = 'auto';
+}
+
+// Gestion de la connexion
+function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showNotification('Veuillez remplir tous les champs', 'error');
+        return;
+    }
+    
+    const user = users.find(u => u.email === email && u.password === password);
+    if (user) {
+        currentUser = { 
+            id: user.id, 
+            name: user.name, 
+            email: user.email, 
+            image: user.image,
+            bio: user.bio,
+            coverImage: user.coverImage
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateAuthUI();
+        closeModal(authModal);
+        showNotification('Connexion réussie', 'success');
+        
+        // Ajouter une notification de bienvenue
+        addNotification({
+            id: notifications.length + 1,
+            type: 'welcome',
+            title: 'Bienvenue sur HSN!',
+            message: 'Commencez à explorer et partager des actualités.',
+            timestamp: new Date(),
+            read: false
+        });
+    } else {
+        showNotification('Email ou mot de passe incorrect', 'error');
+    }
+}
+
+// Gestion de l'inscription
+function handleSignup() {
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const birthdate = document.getElementById('signupBirthdate').value;
+    
+    if (!name || !email || !password || !confirmPassword || !birthdate) {
+        showNotification('Veuillez remplir tous les champs', 'error');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showNotification('Les mots de passe ne correspondent pas', 'error');
+        return;
+    }
+    
+    if (!acceptTerms.checked) {
+        showNotification('Veuillez accepter les conditions d\'utilisation', 'error');
+        return;
+    }
+    
+    if (users.some(u => u.email === email)) {
+        showNotification('Cet email est déjà utilisé', 'error');
+        return;
+    }
+    
+    const newUser = {
+        id: users.length + 1,
+        name,
+        email,
+        password,
+        image: "https://via.placeholder.com/150",
+        bio: "Nouvel utilisateur de HSN",
+        birthdate,
+        coverImage: "https://via.placeholder.com/800x200"
+    };
+    
+    users.push(newUser);
+    currentUser = { 
+        id: newUser.id, 
+        name: newUser.name, 
+        email: newUser.email, 
+        image: newUser.image,
+        bio: newUser.bio,
+        coverImage: newUser.coverImage
+    };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateAuthUI();
+    closeModal(authModal);
+    showNotification('Inscription réussie', 'success');
+    
+    // Ajouter une notification de bienvenue
+    addNotification({
+        id: notifications.length + 1,
+        type: 'welcome',
+        title: 'Bienvenue sur HSN!',
+        message: 'Commencez à explorer et partager des actualités.',
+        timestamp: new Date(),
+        read: false
+    });
+}
+
+// Gestion de la déconnexion
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    updateAuthUI();
+    closeModal(hamburgerModal);
+    showNotification('Déconnexion réussie', 'success');
+}
+
+// Masquer/afficher les mots de passe
+function togglePasswordVisibility(inputId, toggleIcon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'textarea';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
+// Calcul de l'âge
+function calculateAge() {
+    const birthdate = new Date(signupBirthdate.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthdate.getDate())) {
+        age--;
+    }
+    
+    ageDisplay.textContent = `Âge: ${age} ans`;
+}
+
+// Gestion de la publication
+function handlePostSubmit() {
+    if (!currentUser) {
+        showNotification('Connectez-vous pour publier', 'error');
+        return;
+    }
+    
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
+    
+    if (!title || !content) {
+        showNotification('Veuillez remplir le titre et le contenu', 'error');
+        return;
+    }
+    
+    if (title.length > 100) {
+        showNotification('Le titre ne doit pas dépasser 100 caractères', 'error');
+        return;
+    }
+    
+    if (selectedPostCategories.length === 0) {
+        showNotification('Veuillez sélectionner au moins une catégorie', 'error');
+        return;
+    }
+    
+    // Extraction des hashtags du contenu
+    const tags = [];
+    const tagMatches = content.match(/#\w+/g);
+    if (tagMatches) {
+        tagMatches.forEach(tag => {
+            tags.push(tag.substring(1)); // Enlever le #
+        });
+    }
+    
+    // Extraction des mentions
+    const mentions = [];
+    const mentionMatches = content.match(/@\w+/g);
+    if (mentionMatches) {
+        mentionMatches.forEach(mention => {
+            mentions.push(mention.substring(1)); // Enlever le @
+        });
+    }
+    
+    // Création du nouveau post
+    const newPost = {
+        id: posts.length + 1,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userImage: currentUser.image,
+        title,
+        content,
+        images: currentPostImages,
+        categories: selectedPostCategories,
+        tags,
+        mentions,
+        timestamp: new Date(),
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        reactions: {},
+        saved: false
+    };
+    
+    // Ajout du post
+    posts.unshift(newPost);
+    
+    // Mettre à jour les catégories
+    organizePostsByCategory();
+    
+    // Re-rendre les posts
+    renderPosts();
+    
+    // Réinitialisation du formulaire
+    resetPostForm();
+    closeModal(postModal);
+    
+    showNotification('Publication réussie', 'success');
+    
+    // Ajouter une notification pour les mentions
+    mentions.forEach(mention => {
+        const mentionedUser = users.find(u => u.name.toLowerCase().includes(mention.toLowerCase()));
+        if (mentionedUser) {
+            addNotification({
+                id: notifications.length + 1,
+                type: 'mention',
+                title: 'Vous avez été mentionné',
+                message: `${currentUser.name} vous a mentionné dans une publication.`,
+                timestamp: new Date(),
+                read: false,
+                postId: newPost.id,
+                userId: mentionedUser.id
+            });
+        }
+    });
+}
+
+// Réinitialisation du formulaire de publication
+function resetPostForm() {
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postContent').value = '';
+    titleCharCount.textContent = '0';
+    contentCharCount.textContent = '0';
+    selectedPostCategories = [];
+    currentPostImages = [];
+    updateCategoriesDisplay();
+    updateImagesPreview();
+    
+    // Réinitialiser la sélection des catégories
+    categoryOptions.forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Réinitialiser la hauteur du textarea
+    postContent.style.height = 'auto';
+}
+
+// Mise à jour de l'affichage des catégories sélectionnées
+function updateCategoriesDisplay() {
+    selectedCategories.innerHTML = '';
+    selectedPostCategories.forEach(category => {
+        const categoryEl = document.createElement('div');
+        categoryEl.className = 'selected-category';
+        categoryEl.innerHTML = `
+            ${category}
+            <span class="remove-category" onclick="removeCategory('${category}')">&times;</span>
+        `;
+        selectedCategories.appendChild(categoryEl);
+    });
+}
+
+// Ajout/retrait d'une catégorie
+function toggleCategory(category, element) {
+    const index = selectedPostCategories.indexOf(category);
+    
+    if (index === -1) {
+        if (selectedPostCategories.length >= 3) {
+            showNotification('Maximum 3 catégories autorisées', 'error');
+            return;
+        }
+        selectedPostCategories.push(category);
+        element.classList.add('selected');
+    } else {
+        selectedPostCategories.splice(index, 1);
+        element.classList.remove('selected');
+    }
+    
+    updateCategoriesDisplay();
+}
+
+// Retrait d'une catégorie
+function removeCategory(category) {
+    const index = selectedPostCategories.indexOf(category);
+    if (index !== -1) {
+        selectedPostCategories.splice(index, 1);
+        
+        // Mettre à jour l'état visuel des options
+        categoryOptions.forEach(option => {
+            if (option.dataset.category === category) {
+                option.classList.remove('selected');
+            }
+        });
+        
+        updateCategoriesDisplay();
+    }
+}
+
+// Mise à jour de l'aperçu des images
+function updateImagesPreview() {
+    imagesPreview.innerHTML = '';
+    
+    currentPostImages.forEach((image, index) => {
+        const imageEl = document.createElement('div');
+        imageEl.className = 'image-preview-item';
+        imageEl.innerHTML = `
+            <img src="${image}" alt="Preview">
+            <button class="remove-image" onclick="removeImage(${index})">&times;</button>
+        `;
+        imagesPreview.appendChild(imageEl);
+    });
+}
+
+// Retrait d'une image
+function removeImage(index) {
+    currentPostImages.splice(index, 1);
+    updateImagesPreview();
+}
+
+// Gestion des réactions
+function addReaction(postId, reactionType) {
+    if (!currentUser) {
+        showNotification('Connectez-vous pour réagir', 'error');
+        openModal(authModal);
+        return;
+    }
+    
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        // Initialiser les réactions si nécessaire
+        if (!post.reactions) {
+            post.reactions = {};
+        }
+        
+        // Ajouter ou mettre à jour la réaction
+        post.reactions[reactionType] = (post.reactions[reactionType] || 0) + 1;
+        post.likes = Object.values(post.reactions).reduce((sum, count) => sum + count, 0);
+        
+        // Mettre à jour l'affichage
+        const likeCount = document.querySelector(`.post[data-id="${postId}"] .post-action span`);
+        if (likeCount) likeCount.textContent = post.likes;
+        
+        // Changer l'icône selon la réaction
+        const icon = document.querySelector(`.post[data-id="${postId}"] .post-action i`);
+        if (icon) {
+            icon.className = getReactionIcon(post);
+        }
+        
+        // Ajouter une notification pour le propriétaire du post
+        if (post.userId !== currentUser.id) {
+            addNotification({
+                id: notifications.length + 1,
+                type: 'reaction',
+                title: 'Nouvelle réaction',
+                message: `${currentUser.name} a réagi à votre publication.`,
+                timestamp: new Date(),
+                read: false,
+                postId: post.id,
+                userId: post.userId,
+                reaction: reactionType
+            });
+        }
+        
+        // Fermer les options de réaction
+        const reactions = document.querySelector(`.post[data-id="${postId}"] .reaction-options`);
+        if (reactions) {
+            reactions.classList.remove('show');
+        }
+    }
+}
+
+function getReactionIcon(post) {
+    if (!post.reactions || Object.keys(post.reactions).length === 0) {
+        return 'far fa-thumbs-up';
+    }
+    
+    // Trouver la réaction la plus populaire
+    let topReaction = null;
+    let maxCount = 0;
+    
+    for (const [reaction, count] of Object.entries(post.reactions)) {
+        if (count > maxCount) {
+            maxCount = count;
+            topReaction = reaction;
+        }
+    }
+    
+    switch (topReaction) {
+        case 'like': return 'fas fa-thumbs-up';
+        case 'love': return 'fas fa-heart';
+        case 'haha': return 'fas fa-laugh-squint';
+        case 'wow': return 'fas fa-surprise';
+        case 'sad': return 'fas fa-sad-tear';
+        case 'angry': return 'fas fa-angry';
+        default: return 'far fa-thumbs-up';
+    }
+}
+
+// Gestion des commentaires
+function loadCommentsPreview(postId, container) {
+    // Simuler le chargement des commentaires
+    const postComments = comments.filter(c => c.postId === postId).slice(0, 3);
+    
+    if (postComments.length === 0) {
+        container.innerHTML = `
+            <div class="add-comment-preview">
+                <input type="text" placeholder="Ajouter un commentaire...">
+                <button><i class="fas fa-paper-plane"></i></button>
+            </div>
+        `;
+        
+        // Ajouter l'écouteur d'événements pour le commentaire
+        const input = container.querySelector('input');
+        const button = container.querySelector('button');
+        
+        button.addEventListener('click', () => {
+            addCommentPreview(postId, input);
+        });
+        
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addCommentPreview(postId, input);
+            }
+        });
+    } else {
+        let commentsHtml = '';
+        postComments.forEach(comment => {
+            commentsHtml += `
+                <div class="comment-preview">
+                    <span class="comment-preview-user">${comment.userName}:</span>
+                    <span class="comment-preview-text">${comment.text}</span>
+                </div>
+            `;
+        });
+        
+        commentsHtml += `
+            <div class="add-comment-preview">
+                <input type="text" placeholder="Ajouter un commentaire...">
+                <button><i class="fas fa-paper-plane"></i></button>
+            </div>
+        `;
+        
+        container.innerHTML = commentsHtml;
+        
+        // Ajouter l'écouteur d'événements pour le commentaire
+        const input = container.querySelector('input');
+        const button = container.querySelector('button');
+        
+        button.addEventListener('click', () => {
+            addCommentPreview(postId, input);
+        });
+        
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addCommentPreview(postId, input);
+            }
+        });
+    }
+}
+
+function addCommentPreview(postId, input) {
+    const text = input.value.trim();
+    if (!text) {
+        showNotification('Veuillez écrire un commentaire', 'error');
+        return;
+    }
+    
+    if (!currentUser) {
+        showNotification('Connectez-vous pour commenter', 'error');
+        openModal(authModal);
+        return;
+    }
+    
+    const newComment = {
+        id: comments.length + 1,
+        postId: postId,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userImage: currentUser.image,
+        text,
+        timestamp: new Date(),
+        likes: 0,
+        reactions: {}
+    };
+    
+    comments.push(newComment);
+    
+    // Mettre à jour le compteur de commentaires du post
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        post.comments++;
+        
+        // Mettre à jour l'affichage du compteur
+        const commentCount = document.querySelector(`.post[data-id="${postId}"] .post-action span`);
+        if (commentCount) commentCount.textContent = post.comments;
+    }
+    
+    // Recharger l'aperçu des commentaires
+    const commentsPreview = document.getElementById(`comments-${postId}`);
+    loadCommentsPreview(postId, commentsPreview);
+    
+    // Réinitialiser le champ de commentaire
+    input.value = '';
+    
+    showNotification('Commentaire ajouté', 'success');
+    
+    // Ajouter une notification pour le propriétaire du post
+    if (post.userId !== currentUser.id) {
+        addNotification({
+            id: notifications.length + 1,
+            type: 'comment',
+            title: 'Nouveau commentaire',
+            message: `${currentUser.name} a commenté votre publication.`,
+            timestamp: new Date(),
+            read: false,
+            postId: post.id,
+            userId: post.userId
+        });
+    }
+}
+
+function openCommentsModal(postId) {
+    currentCommentsPostId = postId;
+    
+    // Charger le post
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        const timeAgo = getTimeAgo(post.timestamp);
+        const tagsHtml = post.tags.map(tag => `<span class="post-tag" onclick="openHashtagModal('${tag}')">#${tag}</span>`).join(' ');
+        
+        // Gestion des images pour le modal
+        let imagesHtml = '';
+        if (post.images && post.images.length > 0) {
+            imagesHtml = `<div class="post-images-grid single">
+                <img src="${post.images[0]}" alt="Post image" onclick="openImageViewer(${post.id}, 0)">
+            </div>`;
+        }
+        
+        postInModal.innerHTML = `
+            <div class="post-header">
+                <div class="post-user" onclick="openProfileModal(${post.userId})">
+                    <img src="${post.userImage}" alt="${post.userName}">
+                    <div class="post-user-info">
+                        <h4>${post.userName}</h4>
+                        <span class="post-time">${timeAgo}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="post-content">
+                <h3 class="post-title">${post.title}</h3>
+                <p class="post-text">${post.content}</p>
+                ${imagesHtml}
+                <div class="post-tags">${tagsHtml}</div>
+                <div class="post-actions">
+                    <div class="post-action">
+                        <i class="${getReactionIcon(post)}"></i>
+                        <span>${post.likes}</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="far fa-comment"></i>
+                        <span>${post.comments}</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-share"></i>
+                        <span>${post.shares}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Charger les commentaires
+    loadComments(postId);
+    
+    openModal(commentsModal);
+}
+
+function loadComments(postId) {
+    // Simuler le chargement des commentaires
+    let postComments = comments.filter(c => c.postId === postId);
+    
+    // Trier les commentaires selon l'option sélectionnée
+    const sortBy = sortComments.value;
+    switch (sortBy) {
+        case 'recent':
+            postComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            break;
+        case 'relevant':
+            // Simuler la pertinence par nombre de likes
+            postComments.sort((a, b) => b.likes - a.likes);
+            break;
+        case 'random':
+            postComments = shuffleArray(postComments);
+            break;
+    }
+    
+    if (postComments.length === 0) {
+        commentsList.innerHTML = '<div class="no-comments">Aucun commentaire pour le moment</div>';
+    } else {
+        let commentsHtml = '';
+        postComments.forEach(comment => {
+            const timeAgo = getTimeAgo(comment.timestamp);
+            commentsHtml += `
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="${comment.userImage}" alt="${comment.userName}">
+                        <div>
+                            <div class="comment-user">${comment.userName}</div>
+                            <div class="comment-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                    <p class="comment-text">${comment.text}</p>
+                    <div class="comment-actions">
+                        <div class="comment-action" onclick="likeComment(${comment.id})">
+                            <i class="far fa-thumbs-up"></i>
+                            <span>${comment.likes}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        commentsList.innerHTML = commentsHtml;
+    }
+}
+
+function handleCommentSubmit() {
+    if (!currentUser) {
+        showNotification('Connectez-vous pour commenter', 'error');
+        return;
+    }
+    
+    const text = commentInput.value.trim();
+    if (!text) {
+        showNotification('Veuillez écrire un commentaire', 'error');
+        return;
+    }
+    
+    const newComment = {
+        id: comments.length + 1,
+        postId: currentCommentsPostId,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userImage: currentUser.image,
+        text,
+        timestamp: new Date(),
+        likes: 0,
+        reactions: {}
+    };
+    
+    comments.push(newComment);
+    
+    // Mettre à jour le compteur de commentaires du post
+    const post = posts.find(p => p.id === currentCommentsPostId);
+    if (post) {
+        post.comments++;
+        
+        // Mettre à jour l'affichage du compteur
+        const commentCount = document.querySelector(`.post[data-id="${currentCommentsPostId}"] .post-action span`);
+        if (commentCount) commentCount.textContent = post.comments;
+    }
+    
+    // Recharger les commentaires
+    loadComments(currentCommentsPostId);
+    
+    // Réinitialiser le champ de commentaire
+    commentInput.value = '';
+    
+    showNotification('Commentaire ajouté', 'success');
+    
+    // Ajouter une notification pour le propriétaire du post
+    if (post.userId !== currentUser.id) {
+        addNotification({
+            id: notifications.length + 1,
+            type: 'comment',
+            title: 'Nouveau commentaire',
+            message: `${currentUser.name} a commenté votre publication.`,
+            timestamp: new Date(),
+            read: false,
+            postId: post.id,
+            userId: post.userId
+        });
+    }
+}
+
+function likeComment(commentId) {
+    if (!currentUser) {
+        showNotification('Connectez-vous pour aimer un commentaire', 'error');
+        openModal(authModal);
+        return;
+    }
+    
+    const comment = comments.find(c => c.id === commentId);
+    if (comment) {
+        comment.likes++;
+        
+        // Recharger les commentaires
+        if (currentCommentsPostId) {
+            loadComments(currentCommentsPostId);
+        }
+        
+        // Ajouter une notification pour le propriétaire du commentaire
+        if (comment.userId !== currentUser.id) {
+            addNotification({
+                id: notifications.length + 1,
+                type: 'comment_like',
+                title: 'Votre commentaire a été aimé',
+                message: `${currentUser.name} a aimé votre commentaire.`,
+                timestamp: new Date(),
+                read: false,
+                postId: comment.postId,
+                userId: comment.userId
+            });
+        }
+    }
+}
+
+// Gestion du partage
+function sharePost(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        if (navigator.share) {
+            navigator.share({
+                title: post.title,
+                text: post.content.substring(0, 100) + '...',
+                url: window.location.href
+            }).then(() => {
+                post.shares++;
+                const shareCount = document.querySelector(`.post[data-id="${postId}"] .post-action span`);
+                if (shareCount) shareCount.textContent = post.shares;
+                
+                // Ajouter une notification pour le propriétaire du post
+                if (post.userId !== currentUser.id) {
+                    addNotification({
+                        id: notifications.length + 1,
+                        type: 'share',
+                        title: 'Votre publication a été partagée',
+                        message: `${currentUser.name} a partagé votre publication.`,
+                        timestamp: new Date(),
+                        read: false,
+                        postId: post.id,
+                        userId: post.userId
+                    });
+                }
+            }).catch(err => {
+                console.error('Erreur de partage:', err);
+            });
+        } else {
+            // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+            const shareUrl = `mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(post.content.substring(0, 100) + '...')}`;
+            window.open(shareUrl, '_blank');
+            post.shares++;
+            const shareCount = document.querySelector(`.post[data-id="${postId}"] .post-action span`);
+            if (shareCount) shareCount.textContent = post.shares;
+            
+            // Ajouter une notification pour le propriétaire du post
+            if (post.userId !== currentUser.id) {
+                addNotification({
+                    id: notifications.length + 1,
+                    type: 'share',
+                    title: 'Votre publication a été partagée',
+                    message: `${currentUser.name} a partagé votre publication.`,
+                    timestamp: new Date(),
+                    read: false,
+                    postId: post.id,
+                    userId: post.userId
+                });
+            }
+        }
+    }
+}
+
+// Gestion de la recherche
+function handleSearchInput() {
+    const query = fullscreenSearch.value.trim();
+    
+    if (query.length === 0) {
+        // Afficher l'historique de recherche
+        showSearchHistory();
+        searchFilters.style.display = 'none';
+        searchResults.innerHTML = `
+            <div class="search-initial-state">
+                <i class="fas fa-search"></i>
+                <p>Commencez à taper pour rechercher</p>
+            </div>
+        `;
+    } else if (query.length > 2) {
+        // Cacher l'historique et afficher les résultats
+        searchHistoryDiv.style.display = 'none';
+        searchFilters.style.display = 'block';
+        performSearch(query);
+        
+        // Ajouter à l'historique
+        addToSearchHistory(query);
+    } else {
+        searchHistoryDiv.style.display = 'none';
+        searchFilters.style.display = 'none';
+        searchResults.innerHTML = `
+            <div class="search-initial-state">
+                <i class="fas fa-search"></i>
+                <p>Tapez au moins 3 caractères</p>
+            </div>
+        `;
+    }
+}
+
+function showSearchHistory() {
+    if (searchHistory.length === 0) {
+        searchHistoryDiv.style.display = 'none';
+        return;
+    }
+    
+    searchHistoryDiv.style.display = 'block';
+    historyItems.innerHTML = '';
+    
+    // Afficher les 6 dernières recherches
+    const recentHistory = searchHistory.slice(-6).reverse();
+    
+    recentHistory.forEach(item => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <span>${item}</span>
+            <i class="fas fa-times" onclick="removeFromSearchHistory('${item}')"></i>
+        `;
+        
+        historyItem.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('fa-times')) {
+                fullscreenSearch.value = item;
+                performSearch(item);
+            }
+        });
+        
+        historyItems.appendChild(historyItem);
+    });
+}
+
+function addToSearchHistory(query) {
+    // Éviter les doublons
+    const index = searchHistory.indexOf(query);
+    if (index !== -1) {
+        searchHistory.splice(index, 1);
+    }
+    
+    searchHistory.push(query);
+    saveData();
+}
+
+function removeFromSearchHistory(query) {
+    const index = searchHistory.indexOf(query);
+    if (index !== -1) {
+        searchHistory.splice(index, 1);
+        saveData();
+        showSearchHistory();
+    }
+}
+
+function clearSearchHistory() {
+    searchHistory = [];
+    saveData();
+    showSearchHistory();
+}
+
+function performSearch(query) {
+    const queryLower = query.toLowerCase();
+    
+    // Recherche dans les posts
+    let postResults = posts.filter(post =>
+        post.title.toLowerCase().includes(queryLower) ||
+        post.content.toLowerCase().includes(queryLower) ||
+        post.tags.some(tag => tag.toLowerCase().includes(queryLower)) ||
+        post.userName.toLowerCase().includes(queryLower)
+    );
+    
+    // Recherche dans les utilisateurs
+    const userResults = users.filter(user =>
+        user.name.toLowerCase().includes(queryLower) ||
+        user.email.toLowerCase().includes(queryLower)
+    );
+    
+    // Appliquer le filtre de tri
+    switch (currentSearchFilter) {
+        case 'recent':
+            postResults.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            break;
+        case 'oldest':
+            postResults.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            break;
+        case 'week':
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            postResults = postResults.filter(post => new Date(post.timestamp) > oneWeekAgo);
+            break;
+        case 'month':
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+            postResults = postResults.filter(post => new Date(post.timestamp) > oneMonthAgo);
+            break;
+        case 'year':
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            postResults = postResults.filter(post => new Date(post.timestamp) > oneYearAgo);
+            break;
+        // 'relevant' est le tri par défaut
+    }
+    
+    // Affichage des résultats
+    if (postResults.length === 0 && userResults.length === 0) {
+        searchResults.innerHTML = `
+            <div class="search-initial-state">
+                <i class="fas fa-search"></i>
+                <p>Aucun résultat trouvé pour "${query}"</p>
+            </div>
+        `;
+    } else {
+        let resultsHtml = '';
+        
+        if (postResults.length > 0) {
+            resultsHtml += '<h3>Publications</h3>';
+            postResults.forEach(post => {
+                const timeAgo = getTimeAgo(post.timestamp);
+                // Utiliser la première image s'il y en a
+                const imageHtml = post.images && post.images.length > 0 ? 
+                    `<img src="${post.images[0]}" alt="${post.title}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 1rem;">` : '';
+                
+                resultsHtml += `
+                    <div class="search-result-item" onclick="focusOnPost(${post.id})">
+                        <div style="display: flex; align-items: center;">
+                            ${imageHtml}
+                            <div>
+                                <h4>${post.title}</h4>
+                                <p>${post.content.substring(0, 100)}...</p>
+                                <div class="search-result-meta">
+                                    <span>Par ${post.userName}</span>
+                                    <span>${timeAgo}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        if (userResults.length > 0) {
+            resultsHtml += '<h3>Utilisateurs</h3>';
+            userResults.forEach(user => {
+                resultsHtml += `
+                    <div class="search-result-item" onclick="openProfileModal(${user.id})">
+                        <div class="user-result">
+                            <img src="${user.image}" alt="${user.name}">
+                            <div>
+                                <h4>${user.name}</h4>
+                                <p>${user.email}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        searchResults.innerHTML = resultsHtml;
+    }
+}
+
+function focusOnPost(postId) {
+    closeModal(searchModal);
+    
+    const postElement = document.querySelector(`.post[data-id="${postId}"]`);
+    if (postElement) {
+        postElement.scrollIntoView({ behavior: 'smooth' });
+        postElement.style.animation = 'highlight 2s ease';
+        setTimeout(() => {
+            postElement.style.animation = '';
+        }, 2000);
+    }
+}
+
+// Gestion du profil
+function openProfileModal(userId) {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        profileUserName.textContent = user.name;
+        profileUserNameText.textContent = user.name;
+        profileUserEmail.textContent = user.email;
+        profileUserImage.src = user.image;
+        profileBio.textContent = user.bio || 'Aucune biographie';
+        
+        // Charger les posts de l'utilisateur
+        const userPosts = posts.filter(p => p.userId === userId);
+        postCount.textContent = userPosts.length;
+        profilePosts.innerHTML = '';
+        
+        if (userPosts.length === 0) {
+            profilePosts.innerHTML = '<div class="no-posts">Aucune publication</div>';
+        } else {
+            userPosts.forEach(post => {
+                const postElement = createPostElement(post);
+                profilePosts.appendChild(postElement);
+            });
+        }
+        
+        // Afficher/masquer le bouton d'édition
+        if (currentUser && currentUser.id === userId) {
+            editProfileBtn.style.display = 'block';
+            editProfilePic.style.display = 'block';
+        } else {
+            editProfileBtn.style.display = 'none';
+            editProfilePic.style.display = 'none';
+        }
+        
+        openModal(profileModal);
+    }
+}
+
+function openEditProfileModal() {
+    if (!currentUser) return;
+    
+    // Remplir le formulaire avec les données actuelles
+    editProfileName.value = currentUser.name;
+    editProfileBio.value = currentUser.bio || '';
+    bioCharCount.textContent = editProfileBio.value.length;
+    editProfileImage.src = currentUser.image;
+    editCoverImage.src = currentUser.coverImage;
+    
+    openModal(editProfileModal);
+}
+
+function saveProfile() {
+    if (!currentUser) return;
+    
+    const name = editProfileName.value.trim();
+    const bio = editProfileBio.value.trim();
+    
+    if (!name) {
+        showNotification('Le nom est obligatoire', 'error');
+        return;
+    }
+    
+    // Mettre à jour l'utilisateur
+    currentUser.name = name;
+    currentUser.bio = bio;
+    
+    // Mettre à jour l'image de profil si elle a été changée
+    if (editProfileImage.src !== currentUser.image) {
+        currentUser.image = editProfileImage.src;
+    }
+    
+    // Mettre à jour l'image de couverture si elle a été changée
+    if (editCoverImage.src !== currentUser.coverImage) {
+        currentUser.coverImage = editCoverImage.src;
+    }
+    
+    // Mettre à jour dans le stockage local
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Mettre à jour dans la liste des utilisateurs
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    if (userIndex !== -1) {
+        users[userIndex] = { ...users[userIndex], ...currentUser };
+    }
+    
+    // Mettre à jour les posts de l'utilisateur
+    posts.forEach(post => {
+        if (post.userId === currentUser.id) {
+            post.userName = currentUser.name;
+            post.userImage = currentUser.image;
+        }
+    });
+    
+    // Re-rendre les posts
+    renderPosts();
+    
+    closeModal(editProfileModal);
+    openProfileModal(currentUser.id);
+    
+    showNotification('Profil mis à jour avec succès', 'success');
+}
+
+// Gestion des images
+function openImageViewer(postId, imageIndex) {
+    const post = posts.find(p => p.id === postId);
+    if (post && post.images && post.images.length > 0) {
+        currentPostImagesArray = post.images;
+        currentImageViewerIndex = imageIndex;
+        
+        viewedImage.src = post.images[imageIndex];
+        imageViewerTitle.textContent = `Image ${imageIndex + 1} sur ${post.images.length}`;
+        openModal(imageViewerModal);
+    }
+}
+
+function navigateImage(direction) {
+    currentImageViewerIndex += direction;
+    
+    if (currentImageViewerIndex < 0) {
+        currentImageViewerIndex = currentPostImagesArray.length - 1;
+    } else if (currentImageViewerIndex >= currentPostImagesArray.length) {
+        currentImageViewerIndex = 0;
+    }
+    
+    viewedImage.src = currentPostImagesArray[currentImageViewerIndex];
+    imageViewerTitle.textContent = `Image ${currentImageViewerIndex + 1} sur ${currentPostImagesArray.length}`;
+}
+
+// Gestion des hashtags
+function openHashtagModal(hashtag) {
+    hashtagTitle.textContent = `#${hashtag}`;
+    
+    // Compter les posts avec ce hashtag
+    const hashtagPosts = posts.filter(post => 
+        post.tags.some(tag => tag.toLowerCase() === hashtag.toLowerCase())
+    );
+    
+    hashtagPostCount.textContent = `${hashtagPosts.length} publication${hashtagPosts.length !== 1 ? 's' : ''}`;
+    hashtagPosts.innerHTML = '';
+    
+    if (hashtagPosts.length === 0) {
+        hashtagPosts.innerHTML = '<div class="no-posts">Aucune publication avec ce hashtag</div>';
+    } else {
+        hashtagPosts.forEach(post => {
+            const postElement = createPostElement(post);
+            hashtagPosts.appendChild(postElement);
+        });
+    }
+    
+    openModal(hashtagModal);
+}
+
+// Gestion des publications enregistrées
+function toggleSavePost(postId) {
+    if (!currentUser) {
+        showNotification('Connectez-vous pour enregistrer des publications', 'error');
+        openModal(authModal);
+        return;
+    }
+    
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        const isSaved = savedPosts.some(savedPost => savedPost.id === postId);
+        
+        if (isSaved) {
+            // Retirer des enregistrés
+            savedPosts = savedPosts.filter(savedPost => savedPost.id !== postId);
+            post.saved = false;
+            showNotification('Publication retirée des enregistrés', 'success');
+        } else {
+            // Ajouter aux enregistrés
+            savedPosts.push(post);
+            post.saved = true;
+            showNotification('Publication enregistrée', 'success');
+        }
+        
+        saveData();
+        
+        // Re-rendre le post pour mettre à jour l'icône
+        const postElement = document.querySelector(`.post[data-id="${postId}"]`);
+        if (postElement) {
+            const newPostElement = createPostElement(post);
+            postElement.parentNode.replaceChild(newPostElement, postElement);
+        }
+    }
+}
+
+function openSavedPostsModal() {
+    savedPostsList.innerHTML = '';
+    
+    if (savedPosts.length === 0) {
+        savedPostsList.innerHTML = '<div class="no-posts">Aucune publication enregistrée</div>';
+    } else {
+        savedPosts.forEach(post => {
+            const postElement = createPostElement(post);
+            savedPostsList.appendChild(postElement);
+        });
+    }
+    
+    openModal(savedPostsModal);
+}
+
+// Gestion des notifications
+function addNotification(notification) {
+    notifications.push(notification);
+    saveData();
+}
+
+function openNotificationsModal() {
+    notificationsList.innerHTML = '';
+    
+    // Trier les notifications par date (les plus récentes en premier)
+    const sortedNotifications = notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    if (sortedNotifications.length === 0) {
+        notificationsList.innerHTML = '<div class="no-notifications">Aucune notification</div>';
+    } else {
+        sortedNotifications.forEach(notification => {
+            const notificationEl = document.createElement('div');
+            notificationEl.className = `notification ${notification.read ? '' : 'unread'}`;
+            
+            let icon = 'fas fa-bell';
+            switch (notification.type) {
+                case 'welcome': icon = 'fas fa-star'; break;
+                case 'reaction': icon = 'fas fa-heart'; break;
+                case 'comment': icon = 'fas fa-comment'; break;
+                case 'comment_like': icon = 'fas fa-thumbs-up'; break;
+                case 'share': icon = 'fas fa-share'; break;
+                case 'mention': icon = 'fas fa-at'; break;
+            }
+            
+            notificationEl.innerHTML = `
+                <div class="notification-icon">
+                    <i class="${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-text">${notification.message}</div>
+                    <div class="notification-time">${getTimeAgo(notification.timestamp)}</div>
+                </div>
+            `;
+            
+            notificationEl.addEventListener('click', () => {
+                // Marquer comme lu
+                notification.read = true;
+                saveData();
+                
+                // Ouvrir le post concerné si applicable
+                if (notification.postId) {
+                    closeModal(notificationsModal);
+                    focusOnPost(notification.postId);
+                }
+            });
+            
+            notificationsList.appendChild(notificationEl);
+        });
+    }
+    
+    openModal(notificationsModal);
+}
+
+// Gestion du modal "À propos"
+function openAboutModal() {
+    openModal(aboutModal);
+}
+
+// Gestion de l'édition/suppression des posts
+function editPost(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        // Remplir le formulaire avec les données du post
+        document.getElementById('postTitle').value = post.title;
+        document.getElementById('postContent').value = post.content;
+        titleCharCount.textContent = post.title.length;
+        contentCharCount.textContent = post.content.length;
+        
+        // Sélectionner les catégories
+        selectedPostCategories = [...post.categories];
+        updateCategoriesDisplay();
+        categoryOptions.forEach(option => {
+            if (post.categories.includes(option.dataset.category)) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+        
+        // Charger les images
+        currentPostImages = [...post.images];
+        updateImagesPreview();
+        
+        // Ouvrir le modal
+        openModal(postModal);
+        
+        // Supprimer l'ancien post
+        deletePost(postId, false);
+    }
+}
+
+function deletePost(postId, showNotification = true) {
+    const index = posts.findIndex(p => p.id === postId);
+    if (index !== -1) {
+        posts.splice(index, 1);
+        
+        // Mettre à jour les catégories
+        organizePostsByCategory();
+        
+        // Re-rendre les posts
+        renderPosts();
+        
+        if (showNotification) {
+            showNotification('Publication supprimée', 'success');
+        }
+    }
+}
+
+// Fonctions utilitaires
+function toggleSeeMore(button) {
+    const postText = button.previousElementSibling;
+    if (postText.classList.contains('collapsed')) {
+        postText.classList.remove('collapsed');
+        button.textContent = 'Voir moins';
+    } else {
+        postText.classList.add('collapsed');
+        button.textContent = 'Voir plus';
+    }
+}
+
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+function showNotification(message, type = 'info') {
+    // Créer une notification toast
+    const notification = document.createElement('div');
+    notification.className = `notification-toast ${type}`;
+    notification.textContent = message;
+    
+    // Ajouter au DOM
+    document.body.appendChild(notification);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Supprimer après 3 secondes
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Gestion du thème
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+}
+
+// Ajouter les styles pour les notifications toast
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    .notification-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    .notification-toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    .notification-toast.info {
+        background: #1a73e8;
+    }
+    
+    .notification-toast.success {
+        background: #34a853;
+    }
+    
+    .notification-toast.error {
+        background: #ea4335;
+    }
+    
+    .notification-toast.warning {
+        background: #fbbc04;
+        color: #202124;
+    }
+`;
+document.head.appendChild(toastStyles);
+
+// Simulation du chargement infini
+let isLoading = false;
+let currentPage = 1;
+
+function loadMorePosts() {
+    if (isLoading) return;
+    
+    isLoading = true;
+    
+    // Simuler un délai de chargement
+    setTimeout(() => {
+        // Générer de nouveaux posts (simulation)
+        const newPosts = generateMockPosts(5);
+        posts = [...posts, ...newPosts];
+        
+        // Mettre à jour les catégories
+        organizePostsByCategory();
+        
+        // Re-rendre les posts
+        renderPosts();
+        
+        isLoading = false;
+        currentPage++;
+    }, 1000);
+}
+
+function generateMockPosts(count) {
+    const mockPosts = [];
+    const categories = ['technology', 'science', 'politics', 'sports', 'business', 'entertainment'];
+    const users = [
+        { id: 2, name: 'Jean Dupont', image: 'https://via.placeholder.com/40' },
+        { id: 3, name: 'Marie Martin', image: 'https://via.placeholder.com/40' },
+        { id: 4, name: 'Pierre Durand', image: 'https://via.placeholder.com/40' }
+    ];
+    
+    const titles = [
+        'Nouvelle découverte scientifique révolutionnaire',
+        'Les tendances technologiques de cette année',
+        'Analyse des dernières élections',
+        'Résultats du match de football de hier',
+        'Les marchés financiers en hausse',
+        'Nouveaux films à voir absolument'
+    ];
+    
+    const contents = [
+        'Une équipe de chercheurs a fait une découverte qui pourrait changer notre compréhension de...',
+        'La technologie évolue à un rythme effréné. Voici les tendances à surveiller cette année...',
+        'Les résultats des dernières élections montrent une nette progression des partis...',
+        'Le match de hier soir a été marqué par une performance exceptionnelle de...',
+        'Les marchés financiers ont connu une hausse significative cette semaine grâce à...',
+        'Plusieurs films attendus sortiront ce mois-ci. Voici notre sélection des plus prometteurs...'
+    ];
+    
+    for (let i = 0; i < count; i++) {
+        const user = users[Math.floor(Math.random() * users.length)];
+        const categoryCount = Math.floor(Math.random() * 2) + 1;
+        const postCategories = [];
+        
+        for (let j = 0; j < categoryCount; j++) {
+            const category = categories[Math.floor(Math.random() * categories.length)];
+            if (!postCategories.includes(category)) {
+                postCategories.push(category);
+            }
+        }
+        
+        const imageCount = Math.floor(Math.random() * 4);
+        const images = [];
+        for (let j = 0; j < imageCount; j++) {
+            images.push(`https://via.placeholder.com/500x300?text=Image${j+1}`);
+        }
+        
+        mockPosts.push({
+            id: posts.length + mockPosts.length + 1,
+            userId: user.id,
+            userName: user.name,
+            userImage: user.image,
+            title: titles[Math.floor(Math.random() * titles.length)],
+            content: contents[Math.floor(Math.random() * contents.length)],
+            images: images,
+            categories: postCategories,
+            tags: ['actualité', 'news'],
+            timestamp: new Date(Date.now() - Math.random() * 86400000 * 7), // Dans les 7 derniers jours
+            likes: Math.floor(Math.random() * 50),
+            comments: Math.floor(Math.random() * 20),
+            shares: Math.floor(Math.random() * 10),
+            reactions: {},
+            saved: false
+        });
+    }
+    
+    return mockPosts;
+}
+    </script>
+</body>
+</html>
